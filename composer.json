@@ -1,0 +1,23 @@
+{
+    "name": "thewunder/croute",
+    "description": "Convention based routing for PHP",
+    "keywords": ["routing", "router"],
+    "type": "library",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael O'Connell",
+            "email": "wundbread@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Croute\\" : "src/" }
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/http-foundation": "~2.0",
+        "symfony/event-dispatcher": "~2.0",
+        "minime/annotations": "~2.0"
+    }
+}
