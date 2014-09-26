@@ -124,6 +124,7 @@ class Router
      * @param ControllerInterface $controller
      * @param string $actionMethod
      * @param Request $request
+     * @throws \Exception
      * @return Response
      */
     protected function invokeAction(ControllerInterface $controller, $actionMethod, Request $request)
@@ -157,7 +158,8 @@ class Router
             if($this->errorHandler) {
                 $response = $this->errorHandler->handleException($e);
             } else {
-                $response = $this->handleError($e->getMessage(), 500);
+                ob_end_clean();
+                throw $e;
             }
         }
 
