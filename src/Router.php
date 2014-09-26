@@ -139,6 +139,7 @@ class Router
         foreach($method->getParameters() as $parameter) {
             $value = $request->get($parameter->getName());
             if($value === null && !$parameter->isOptional()) {
+                ob_end_clean();
                 return $this->handleError("Missing required parameter '{$parameter->getName()}'", 400);
             }
             $params[] = $value;
@@ -153,6 +154,8 @@ class Router
 
         if(!$response instanceof Response) {
             $response = new Response(ob_get_clean());
+        } else {
+            ob_end_clean();
         }
 
         $afterEvent = new AfterActionEvent($request, $response);
