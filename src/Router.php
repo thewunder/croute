@@ -150,7 +150,11 @@ class Router
         try {
             $response = $method->invokeArgs($controller, $params);
         } catch(\Exception $e) {
-            $response = $this->errorHandler->handleException($e);
+            if($this->errorHandler) {
+                $response = $this->errorHandler->handleException($e);
+            } else {
+                $response = $this->handleError($e->getMessage(), 500);
+            }
         }
 
         if(!$response instanceof Response) {
