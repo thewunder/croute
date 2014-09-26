@@ -40,6 +40,14 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($controller instanceof \Croute\MyNamespace\NamedController);
     }
 
+    public function testControllerNotFound()
+    {
+        $factory = $this->getFactory();
+
+        $controller = $factory->getController(Request::create('/asdf/'));
+        $this->assertNull($controller);
+    }
+
     protected function getFactory()
     {
         return new ControllerFactory(['Croute'], []);
