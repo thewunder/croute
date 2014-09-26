@@ -22,6 +22,6 @@ class AfterSendEvent extends RouterEvent
      */
     public function setResponse(Response $response)
     {
-        throw new \BadMethodCallException('The respose has already been sent and cannot be modified');
+        throw new \BadMethodCallException('The response has already been sent and cannot be modified');
     }
 }
