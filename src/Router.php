@@ -91,6 +91,8 @@ class Router
 
         $response->send();
         $this->dispatchEvent('router.response_sent', new AfterSendEvent($request, $response));
+
+        return $response;
     }
 
     /**
