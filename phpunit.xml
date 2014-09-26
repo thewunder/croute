@@ -2,7 +2,10 @@
          bootstrap="vendor/autoload.php"
          colors="true">
     <testsuites>
-        <testsuite name="Annotations">
+        <testsuite name="CoreTests">
+            <directory>test</directory>
+        </testsuite>
+        <testsuite name="AnnotationTests">
             <directory>test/Annotation</directory>
         </testsuite>
     </testsuites>
