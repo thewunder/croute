@@ -69,24 +69,28 @@ class Router
 
     public function route(Request $request)
     {
-        $requestEvent = new RequestEvent($request);
-        $this->dispatchEvent('router.request', $requestEvent);
+        try {
+            $requestEvent = new RequestEvent($request);
+            $this->dispatchEvent('router.request', $requestEvent);
 
-        $controller = $this->controllerFactory->getController($request);
-        if(!$controller) {
-            $response = $this->handleError('Unable to load '.$request->attributes->get('controller').'Controller.', 404);
-        } else {
-            $controllerEvent = new ControllerLoadedEvent($request, $controller);
-            $this->dispatchEvent('router.controller_loaded', $controllerEvent);
-
-            $actionMethod = $this->matchAction($controller, $request);
-            if(!$actionMethod) {
-                $controllerName = $request->attributes->get('controller');
-                $action = $request->attributes->get('action');
-                $response = $this->handleError("Method $action not found on {$controllerName}Controller", 404);
+            $controller = $this->controllerFactory->getController($request);
+            if(!$controller) {
+                $response = $this->handleError('Unable to load '.$request->attributes->get('controller').'Controller.', 404);
             } else {
-                $response = $this->invokeAction($controller, $actionMethod, $request);
+                $controllerEvent = new ControllerLoadedEvent($request, $controller);
+                $this->dispatchEvent('router.controller_loaded', $controllerEvent);
+
+                $actionMethod = $this->matchAction($controller, $request);
+                if(!$actionMethod) {
+                    $controllerName = $request->attributes->get('controller');
+                    $action = $request->attributes->get('action');
+                    $response = $this->handleError("Method $action not found on {$controllerName}Controller", 404);
+                } else {
+                    $response = $this->invokeAction($controller, $actionMethod, $request);
+                }
             }
+        } catch(SendResponseException $e) {
+            $response = $e->getResponse();
         }
 
         $response->send();
@@ -232,9 +236,7 @@ class Router
         }
 
         if($event->getResponse() && $eventName != 'router.after_action' && $eventName != 'router.response_sent') {
-            $event->getResponse()->send();
-            $this->dispatchEvent('router.response_sent', new AfterSendEvent($event->getRequest(), $event->getResponse()));
-            exit;
+            throw new SendResponseException($event->getResponse());
         }
     }
 }
