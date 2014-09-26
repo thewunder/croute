@@ -205,6 +205,7 @@ class Router
      *
      * @param $eventName
      * @param RouterEvent $event
+     * @throws \Exception
      */
     private function dispatchEvent($eventName, RouterEvent $event)
     {
@@ -220,9 +221,13 @@ class Router
                 }
             }
         } catch(\Exception $e) {
-            $response = $this->errorHandler->handleException($e);
-            if($response instanceof Response) {
-                $event->setResponse($response);
+            if($this->errorHandler) {
+                $response = $this->errorHandler->handleException($e);
+                if($response instanceof Response) {
+                    $event->setResponse($response);
+                }
+            } else {
+                throw $e;
             }
         }
 
