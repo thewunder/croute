@@ -129,6 +129,7 @@ class Router
 
         if(!$method->isPublic()) {
             $controllerName = $request->attributes->get('controller');
+            ob_end_clean();
             return $this->handleError("Method '{$actionMethod}' on {$controllerName}Controller is not public", 500);
         }
 
