@@ -1,6 +1,7 @@
 <?php
 namespace Croute;
 
+use Croute\Annotation\AnnotationHandlerInterface;
 use Croute\Event\AfterActionEvent;
 use Croute\Event\AfterSendEvent;
 use Croute\Event\BeforeActionEvent;

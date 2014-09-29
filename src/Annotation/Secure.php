@@ -1,7 +1,7 @@
 <?php
 namespace Croute\Annotation;
 
-use Croute\AnnotationHandler;
+use Croute\Annotation\AnnotationHandler;
 use Croute\Event\RouterEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 

@@ -1,5 +1,5 @@
 <?php
-namespace Croute;
+namespace Croute\Annotation;
 
 
 use Croute\Event\BeforeActionEvent;
