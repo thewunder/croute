@@ -75,40 +75,43 @@ class Router
         return $this->controllerFactory;
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function route(Request $request)
     {
-        try {
-            $requestEvent = new RequestEvent($request);
-            $this->dispatchEvent('router.request', $requestEvent);
-
-            $controllerName = $this->controllerFactory->getControllerName($request);
-            $request->attributes->set('controller', $controllerName);
-            $controller = $this->controllerFactory->getController($request, $controllerName);
-
-            if(!$controller) {
-                $response = $this->handleError('Unable to load '.$request->attributes->get('controller').'Controller.', 404);
-            } else {
-                $controller->setRequest($request);
-                $controllerEvent = new ControllerLoadedEvent($request, $controller);
-                $this->dispatchEvent('router.controller_loaded', $controllerEvent);
-
-                $actionMethod = $this->matchAction($controller, $request);
-                if(!$actionMethod) {
-                    $controllerName = $request->attributes->get('controller');
-                    $action = $request->attributes->get('action');
-                    $response = $this->handleError("Method $action not found on {$controllerName}Controller", 404);
-                } else {
-                    $response = $this->invokeAction($controller, $actionMethod, $request);
-                }
-            }
-        } catch(SendResponseException $e) {
-            $response = $e->getResponse();
+        $requestEvent = new RequestEvent($request);
+        $response = $this->dispatchEvent('router.request', $requestEvent);
+        if($response) {
+            return $this->sendResponse($request, $response);
         }
 
-        $response->send();
-        $this->dispatchEvent('router.response_sent', new AfterSendEvent($request, $response));
+        $controllerName = $this->controllerFactory->getControllerName($request);
+        $request->attributes->set('controller', $controllerName);
+        $controller = $this->controllerFactory->getController($request, $controllerName);
 
-        return $response;
+        if(!$controller) {
+            $response = $this->handleError('Unable to load '.$request->attributes->get('controller').'Controller.', 404);
+        } else {
+            $controller->setRequest($request);
+            $controllerEvent = new ControllerLoadedEvent($request, $controller);
+            $response = $this->dispatchEvent('router.controller_loaded', $controllerEvent);
+            if($response) {
+                return $this->sendResponse($request, $response);
+            }
+
+            $actionMethod = $this->matchAction($controller, $request);
+            if(!$actionMethod) {
+                $controllerName = $request->attributes->get('controller');
+                $action = $request->attributes->get('action');
+                $response = $this->handleError("Method $action not found on {$controllerName}Controller", 404);
+            } else {
+                $response = $this->invokeAction($controller, $actionMethod, $request);
+            }
+        }
+
+        return $this->sendResponse($request, $response);
     }
 
     /**
@@ -198,22 +201,6 @@ class Router
     }
 
     /**
-     * @param $message
-     * @param int $code
-     * @return Response
-     */
-    protected function handleError($message, $code = 404)
-    {
-        if(!$this->errorHandler) {
-            $response = new Response(Response::$statusTexts[$code], $code);
-        } else {
-            $response = $this->errorHandler->displayErrorPage($code, $message);
-        }
-
-        return $response;
-    }
-
-    /**
      * Dispatches the event and the following related events:
      *
      * event_name.controllerName (if the controller name has been determined)
@@ -224,6 +211,7 @@ class Router
      * @param $eventName
      * @param RouterEvent $event
      * @throws \Exception
+     * @return Response
      */
     private function dispatchEvent($eventName, RouterEvent $event)
     {
@@ -250,8 +238,38 @@ class Router
         }
 
         if($event->getResponse() && $eventName != 'router.after_action' && $eventName != 'router.response_sent') {
-            throw new SendResponseException($event->getResponse());
+            return $event->getResponse();
         }
+
+        return null;
+    }
+
+    /**
+     * @param $message
+     * @param int $code
+     * @return Response
+     */
+    protected function handleError($message, $code = 404)
+    {
+        if(!$this->errorHandler) {
+            $response = new Response(Response::$statusTexts[$code], $code);
+        } else {
+            $response = $this->errorHandler->displayErrorPage($code, $message);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param Request $request
+     * @param $response
+     * @return Response
+     */
+    protected function sendResponse(Request $request, Response $response)
+    {
+        $response->send();
+        $this->dispatchEvent('router.response_sent', new AfterSendEvent($request, $response));
+        return $response;
     }
 }
 
