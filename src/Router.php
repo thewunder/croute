@@ -67,6 +67,14 @@ class Router
         return $this;
     }
 
+    /**
+     * @return ControllerFactoryInterface
+     */
+    public function getControllerFactory()
+    {
+        return $this->controllerFactory;
+    }
+
     public function route(Request $request)
     {
         try {
