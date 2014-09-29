@@ -1,17 +1,22 @@
 Croute
 ======
 
-Convention based routing for PHP based on symfony components.
+Convention based routing for PHP based on Symfony components.
 
-Your index.php should look something like this (except you should use a dependency injection container):
+Croute is great because:
 
-    $factory = new ControllerFactory(['Your\\Namespace\\Controller'], [$dependency1, $dependency2]);
-    $router = new Router($factory, $eventDispatcher);
+* You don't need to maintain a routing table
+* Promotes consistent code organization
+* Allows for customization through annotations and events
+
+Your index.php should look something like this:
+
+    $router = Router::create($eventDispatcher, ['Your\\Controller\\Namespace'], [$dependency1, $dependency2]);
     $router->route($request);
 
 Your controllers should look something like this:
 
-    namespace Your\Namespace\Controller
+    namespace Your\Controller\Namespace
     
     class IndexController extends Croute\Controller
     {
@@ -40,10 +45,71 @@ Your controllers should look something like this:
 
 The name of the controller determines which url it appears as:
 
-> http://yourdomain/my/ -> Your\Namespace\Controller\MyController::indexAction()
-http://yourdomain/my/action -> Your\Namespace\Controller\MyController::actionAction()
+* http://yourdomain/my/ -> Your\Controller\Namespace\MyController::indexAction()
+* http://yourdomain/my/action -> Your\Controller\Namespace\MyController::actionAction()
 
-The default controller factory supports nested namespaces so that:
+It supports nested namespaces so that:
 
-> http://yourdomain/level1/level2/save -> Your\Namespace\Controller\Level1\Level2\IndexController::saveAction()
+* http://yourdomain/level1/level2/save -> Your\Controller\Namespace\Level1\Level2\IndexController::saveAction()
 
+Annotations
+-----------
+
+Croute optionally supports controller and action annotations through the excellent [minime/annotations](https://github.com/marcioAlmada/annotations)
+library.  To add an annotation handler simply:
+
+    $router->addAnnotationHandler($myhandler);
+
+Two annotations are included out of the box @httpMethod and @secure
+
+### @httpMethod
+
+Restricts the allowed http methods.  Returns a 400 response if the method does not match.
+ 
+    /**
+     * @httpMethod POST
+     */
+    public function saveAction()
+    
+### @secure
+
+Requires a secure connection.  If the connection is not https send a 301 redirect to the same url with the https protocol.
+
+    /**
+     * @secure
+     */
+    class IndexController extends Controller
+    {
+
+Events
+------
+
+Symfony events are dispatched for every step in the routing process.  A total of 12 events are dispatched in a
+successful request:
+
+1. router.request
+1. router.controller_loaded
+1. router.controller_loaded.Index
+1. router.before_action
+1. router.before_action.Index
+1. router.before_action.Index.indexAction
+1. router.after_action
+1. router.after_action.Index
+1. router.after_action.Index.indexAction
+1. router.response_sent
+1. router.response_sent.Index
+1. router.response_sent.Index.indexAction
+
+At any time before the response is sent, in an event listener you can set a response on the event to bypass the action and send instead.
+
+    public function myListener(ControllerLoadedEvent $event)
+    {
+        $event->setResponse(new Response('PermissionDenied', 403));
+    }
+
+Error Handling
+--------------
+
+Proper error handling is not really something that I can do for you.  It's up to you to determine how to do logging, how and when to render a pretty error page.  
+Implement the EventHandlerInterface and set your error handler on the router.  Your class will be called when common routing events occur (i.e. 404 errors) and
+when there is an exception during the routing process.
