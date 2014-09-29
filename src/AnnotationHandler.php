@@ -6,6 +6,10 @@ use Croute\Event\ControllerLoadedEvent;
 use Croute\Event\RouterEvent;
 use Minime\Annotations\Interfaces\ReaderInterface;
 
+/**
+ * Handles most of the work to implement a annotation handler
+ * Simply set the annotation property to the name of the annotation, and implement handleAnnotation
+ */
 abstract class AnnotationHandler implements AnnotationHandlerInterface
 {
     /**
@@ -41,6 +45,10 @@ abstract class AnnotationHandler implements AnnotationHandlerInterface
         $this->handleAnnotation($value, $event);
     }
 
+    /**
+     * @param mixed $value
+     * @param RouterEvent $event
+     */
     protected abstract function handleAnnotation($value, RouterEvent $event);
 
     public static function getSubscribedEvents()
