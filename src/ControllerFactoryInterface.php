@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 interface ControllerFactoryInterface
 {
     /**
-     * Returns the name of the controller to load, generally a class name without any
+     * Returns the name of the controller to load, used in naming events
      *
      * @param Request $request
      * @return string
