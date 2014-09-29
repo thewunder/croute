@@ -60,7 +60,7 @@ library.  To add an annotation handler simply:
 
     $router->addAnnotationHandler($myhandler);
 
-Two annotations are included out of the box @httpMethod and @secure
+Two annotations are included (but must be added) out of the box @httpMethod and @secure.
 
 ### @httpMethod
 
