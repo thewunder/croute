@@ -28,6 +28,19 @@ class Router
     /** @var AnnotationHandlerInterface[]  */
     protected $annotationHandlers = [];
 
+    /**
+     * Returns an instance using the default controller factory implementation
+     *
+     * @param EventDispatcher $dispatcher
+     * @param array $controllerNamespaces Namespaces to search for controller classes
+     * @param array $controllerDependencies Dependencies passed to controller constructor
+     * @return Router
+     */
+    public static function create(EventDispatcher $dispatcher, array $controllerNamespaces, array $controllerDependencies = array())
+    {
+        return new static(new ControllerFactory($controllerNamespaces, $controllerDependencies), $dispatcher);
+    }
+
     public function __construct(ControllerFactoryInterface $controllerFactory, EventDispatcher $dispatcher)
     {
         $this->controllerFactory = $controllerFactory;

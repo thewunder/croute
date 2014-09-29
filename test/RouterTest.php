@@ -7,6 +7,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RouterTest extends \PHPUnit_Framework_TestCase
 {
+    public function testCreate()
+    {
+        $router = Router::create(new EventDispatcher(), ['Croute']);
+        $this->assertTrue($router->getControllerFactory() instanceof ControllerFactory);
+    }
+
     public function testRoute()
     {
         $response = $this->getRouter()->route(Request::create('/'));
