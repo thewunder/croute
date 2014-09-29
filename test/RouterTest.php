@@ -121,11 +121,9 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $request = Request::create('/');
-        //these would ordinarily be set by the controller factory
-        $request->attributes->set('controller', 'Index');
-        $request->attributes->set('action', 'index');
 
-        $mockDispatcher->expects($this->exactly(15))->method('dispatch');
+        // 12 = 1 request, 2 controller loaded, 3 before action, 3 after after, 3 response sent
+        $mockDispatcher->expects($this->exactly(12))->method('dispatch');
 
         $factory = $this->getMockBuilder('Croute\\ControllerFactory')
             ->disableOriginalConstructor()

@@ -9,7 +9,9 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $factory = $this->getFactory();
 
-        $controller = $factory->getController(Request::create('/'));
+        $request = Request::create('/');
+        $controllerName = $factory->getControllerName($request);
+        $controller = $factory->getController($request, $controllerName);
         $this->assertTrue($controller instanceof IndexController);
     }
 
@@ -17,7 +19,9 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $factory = $this->getFactory();
 
-        $controller = $factory->getController(Request::create('/named/'));
+        $request = Request::create('/named/');
+        $controllerName = $factory->getControllerName($request);
+        $controller = $factory->getController($request, $controllerName);
         $this->assertTrue($controller instanceof NamedController);
     }
 
@@ -25,18 +29,23 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $factory = $this->getFactory();
 
-        $controller = $factory->getController(Request::create('/nam..\..ed/'));
-        $this->assertTrue($controller instanceof NamedController);
+        $request = Request::create('/nam..\..ed/');
+        $controllerName = $factory->getControllerName($request);
+        $this->assertEquals('Named', $controllerName);
     }
 
     public function testNamespacedControllers()
     {
         $factory = $this->getFactory();
 
-        $controller = $factory->getController(Request::create('/myNamespace/'));
+        $request = Request::create('/myNamespace/');
+        $controllerName = $factory->getControllerName($request);
+        $controller = $factory->getController($request, $controllerName);
         $this->assertTrue($controller instanceof \Croute\MyNamespace\IndexController);
 
-        $controller = $factory->getController(Request::create('/myNamespace/named/'));
+        $request = Request::create('/myNamespace/named/');
+        $controllerName = $factory->getControllerName($request);
+        $controller = $factory->getController($request, $controllerName);
         $this->assertTrue($controller instanceof \Croute\MyNamespace\NamedController);
     }
 
@@ -44,7 +53,9 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $factory = $this->getFactory();
 
-        $controller = $factory->getController(Request::create('/asdf/'));
+        $request = Request::create('/asdf/');
+        $controllerName = $factory->getControllerName($request);
+        $controller = $factory->getController($request, $controllerName);
         $this->assertNull($controller);
     }
 

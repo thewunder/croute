@@ -23,12 +23,31 @@ class ControllerFactory implements ControllerFactoryInterface
 
     /**
      * @param Request $request
+     * @return string
+     */
+    public function getControllerName(Request $request)
+    {
+        $path = $request->getPathInfo();
+        if(strrpos($path, '/')) {
+            $path = $request->getBaseUrl() . $path;
+            $controllerName = substr($path, 1, strrpos($path, '/') - 1); //chop off leading /
+            $controllerName = preg_replace(array('#[^a-z0-9/]#i','#/#'), array('', '\\'), $controllerName); //sanitize and flip / to \
+            $controllerName = preg_replace_callback(array('#^[a-z]#','#\\\\[a-z]#'), //normalize capitalization
+                function($matches){
+                    return strtoupper($matches[0]);
+                }, $controllerName);
+            return $controllerName;
+        } else {
+            return 'Index';
+        }
+    }
+
+    /**
+     * @param Request $request
      * @return ControllerInterface
      */
-    public function getController(Request $request)
+    public function getController(Request $request, $controllerName)
     {
-        $controllerName = $this->getControllerName($request);
-
         foreach($this->namespaces as $namespace)
         {
             $controllerClass = $namespace . '\\' . $controllerName . 'Controller';
@@ -46,8 +65,6 @@ class ControllerFactory implements ControllerFactoryInterface
             }
 
             if($controller instanceof ControllerInterface) {
-                $request->attributes->set('controller', $controllerName);
-                $controller->setRequest($request);
                 return $controller;
             }
         }
@@ -64,26 +81,5 @@ class ControllerFactory implements ControllerFactoryInterface
         $class = new \ReflectionClass($controllerClass);
         $instance = $class->newInstanceArgs($this->dependencies);
         return $instance;
-    }
-
-    /**
-     * @param Request $request
-     * @return string
-     */
-    protected function getControllerName(Request $request)
-    {
-        $path = $request->getPathInfo();
-        if(strrpos($path, '/')) {
-            $path = $request->getBaseUrl() . $path;
-            $controllerName = substr($path, 1, strrpos($path, '/') - 1); //chop off leading /
-            $controllerName = preg_replace(array('#[^a-z0-9/]#i','#/#'), array('', '\\'), $controllerName); //sanitize and flip / to \
-            $controllerName = preg_replace_callback(array('#^[a-z]#','#\\\\[a-z]#'), //normalize capitalization
-                function($matches){
-                    return strtoupper($matches[0]);
-                }, $controllerName);
-            return $controllerName;
-        } else {
-            return 'Index';
-        }
     }
 }

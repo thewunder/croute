@@ -73,10 +73,14 @@ class Router
             $requestEvent = new RequestEvent($request);
             $this->dispatchEvent('router.request', $requestEvent);
 
-            $controller = $this->controllerFactory->getController($request);
+            $controllerName = $this->controllerFactory->getControllerName($request);
+            $request->attributes->set('controller', $controllerName);
+            $controller = $this->controllerFactory->getController($request, $controllerName);
+
             if(!$controller) {
                 $response = $this->handleError('Unable to load '.$request->attributes->get('controller').'Controller.', 404);
             } else {
+                $controller->setRequest($request);
                 $controllerEvent = new ControllerLoadedEvent($request, $controller);
                 $this->dispatchEvent('router.controller_loaded', $controllerEvent);
 
