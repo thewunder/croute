@@ -1,6 +1,8 @@
 Croute
 ======
 
+![Build Status](https://api.travis-ci.org/thewunder/croute.svg?branch=master)
+
 Convention based routing for PHP based on Symfony components.
 
 Croute is great because:
