@@ -27,7 +27,7 @@ class Router
     protected $errorHandler;
 
     /** @var AnnotationHandlerInterface[]  */
-    protected $annotationHandlers = [];
+    protected $annotationHandlers = array();
 
     /**
      * Returns an instance using the default controller factory implementation
