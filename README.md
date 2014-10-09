@@ -1,7 +1,7 @@
 Croute
 ======
 
-![Build Status](https://api.travis-ci.org/thewunder/croute.svg?branch=master)
+[![Build Status](https://api.travis-ci.org/thewunder/croute.svg?branch=master)](https://travis-ci.org/thewunder/croute)
 
 Convention based routing for PHP based on Symfony components.
 
