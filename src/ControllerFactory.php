@@ -44,6 +44,7 @@ class ControllerFactory implements ControllerFactoryInterface
 
     /**
      * @param Request $request
+     * @param string $controllerName
      * @return ControllerInterface
      */
     public function getController(Request $request, $controllerName)
