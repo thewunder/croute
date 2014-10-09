@@ -21,6 +21,7 @@
         "minime/annotations": "~2.0"
     },
     "require-dev": {
-        "mikey179/vfsStream": "~1.0"
+        "mikey179/vfsStream": "~1.0",
+        "satooshi/php-coveralls": "dev-master"
     }
 }
