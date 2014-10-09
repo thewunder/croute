@@ -31,8 +31,8 @@ class ControllerFactory implements ControllerFactoryInterface
         if(strrpos($path, '/')) {
             $path = $request->getBaseUrl() . $path;
             $controllerName = substr($path, 1, strrpos($path, '/') - 1); //chop off leading /
-            $controllerName = preg_replace(array('#[^a-z0-9/]#i','#/#'), array('', '\\'), $controllerName); //sanitize and flip / to \
-            $controllerName = preg_replace_callback(array('#^[a-z]#','#\\\\[a-z]#'), //normalize capitalization
+            $controllerName = preg_replace(['#[^a-z0-9/]#i','#/#'], ['', '\\'], $controllerName); //sanitize and flip / to \
+            $controllerName = preg_replace_callback(['#^[a-z]#','#\\\\[a-z]#'], //normalize capitalization
                 function($matches){
                     return strtoupper($matches[0]);
                 }, $controllerName);

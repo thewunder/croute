@@ -21,7 +21,7 @@ class HttpMethod extends AnnotationHandler
             }
 
             if(is_string($value)) {
-                $value = array($value);
+                $value = [$value];
             }
 
             $value = array_map('strtoupper', $value);

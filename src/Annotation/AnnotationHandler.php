@@ -53,9 +53,9 @@ abstract class AnnotationHandler implements AnnotationHandlerInterface
 
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             'router.controller_loaded'  => 'handleControllerAnnotations',
             'router.before_action'      => 'handleActionAnnotations'
-        );
+        ];
     }
 }

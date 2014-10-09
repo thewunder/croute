@@ -27,7 +27,7 @@ class Router
     protected $errorHandler;
 
     /** @var AnnotationHandlerInterface[]  */
-    protected $annotationHandlers = array();
+    protected $annotationHandlers = [];
 
     /**
      * Returns an instance using the default controller factory implementation
@@ -37,7 +37,7 @@ class Router
      * @param array $controllerDependencies Dependencies passed to controller constructor
      * @return Router
      */
-    public static function create(EventDispatcher $dispatcher, array $controllerNamespaces, array $controllerDependencies = array())
+    public static function create(EventDispatcher $dispatcher, array $controllerNamespaces, array $controllerDependencies = [])
     {
         return new static(new ControllerFactory($controllerNamespaces, $controllerDependencies), $dispatcher);
     }
@@ -170,7 +170,7 @@ class Router
         $beforeEvent = new BeforeActionEvent($request, $controller, $method);
         $this->dispatchEvent('router.before_action', $beforeEvent);
 
-        $params = array();
+        $params = [];
         foreach($method->getParameters() as $parameter) {
             $value = $request->get($parameter->getName());
             if($value === null && !$parameter->isOptional()) {
