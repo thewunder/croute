@@ -20,4 +20,4 @@ interface ControllerFactoryInterface
      * @return ControllerInterface
      */
     public function getController(Request $request, $controllerName);
-} 
+}

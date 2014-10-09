@@ -15,4 +15,4 @@ interface ControllerInterface
      * @return void
      */
     public function setRequest(Request $request);
-} 
+}

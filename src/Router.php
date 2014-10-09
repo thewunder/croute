@@ -286,4 +286,3 @@ class Router
         return $response;
     }
 }
-

@@ -42,4 +42,4 @@ abstract class RouterEvent extends Event
     {
         $this->response = $response;
     }
-} 
+}
