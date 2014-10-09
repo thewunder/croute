@@ -2,6 +2,7 @@ Croute
 ======
 
 [![Build Status](https://api.travis-ci.org/thewunder/croute.svg?branch=master)](https://travis-ci.org/thewunder/croute)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/11efe3a2-9566-4904-8e40-0d69efed7b02/mini.png)](https://insight.sensiolabs.com/projects/11efe3a2-9566-4904-8e40-0d69efed7b02)
 
 Convention based routing for PHP based on Symfony components.
 
