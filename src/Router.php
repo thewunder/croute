@@ -281,6 +281,7 @@ class Router
      */
     protected function sendResponse(Request $request, Response $response)
     {
+        $response->prepare($request);
         $response->send();
         $this->dispatchEvent('router.response_sent', new AfterSendEvent($request, $response));
         return $response;

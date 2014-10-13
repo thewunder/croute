@@ -53,7 +53,6 @@ abstract class Controller implements ControllerInterface
     {
         $response = new BinaryFileResponse($file);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
-        $response->prepare($this->request);
         return $response;
     }
 
