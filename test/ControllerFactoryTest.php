@@ -59,6 +59,19 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($controller);
     }
 
+    public function testGettersAndSetters()
+    {
+        $factory = $this->getFactory();
+
+        $dependencies = ['asdf'];
+        $factory->setDependencies($dependencies);
+        $this->assertEquals($dependencies, $factory->getDependencies());
+
+        $namespaces = ['namespace1', 'namespace2'];
+        $factory->setNamespaces($namespaces);
+        $this->assertEquals($namespaces, $factory->getNamespaces());
+    }
+
     protected function getFactory()
     {
         return new ControllerFactory(['Croute'], []);

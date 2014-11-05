@@ -76,7 +76,7 @@ class ControllerFactory implements ControllerFactoryInterface
     /**
      * @param array $namespaces
      */
-    public function setNamespaces($namespaces)
+    public function setNamespaces(array $namespaces)
     {
         $this->namespaces = $namespaces;
     }
@@ -84,9 +84,25 @@ class ControllerFactory implements ControllerFactoryInterface
     /**
      * @param array $dependencies
      */
-    public function setDependencies($dependencies)
+    public function setDependencies(array $dependencies)
     {
         $this->dependencies = $dependencies;
+    }
+
+    /**
+     * @return array
+     */
+    public function getNamespaces()
+    {
+        return $this->namespaces;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDependencies()
+    {
+        return $this->dependencies;
     }
 
     /**
