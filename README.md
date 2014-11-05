@@ -13,6 +13,19 @@ Croute is great because:
 * Promotes consistent code organization
 * Allows for customization through annotations and events
 
+Install via Composer
+--------------------
+Via the command line:
+
+    composer.phar require thewunder/croute ~1.0
+
+Or add the following to the require section your composer.json:
+
+    "thewunder/croute": "~1.0"
+
+Basics
+------
+
 Your index.php should look something like this:
 
     $router = Router::create($eventDispatcher, ['Your\\Controller\\Namespace'], [$dependency1, $dependency2]);
