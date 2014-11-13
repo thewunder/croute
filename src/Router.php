@@ -168,7 +168,11 @@ class Router
         }
 
         $beforeEvent = new BeforeActionEvent($request, $controller, $method);
-        $this->dispatchEvent('router.before_action', $beforeEvent);
+        $response = $this->dispatchEvent('router.before_action', $beforeEvent);
+        if($response) {
+            ob_end_clean();
+            return $response;
+        }
 
         $params = [];
         foreach($method->getParameters() as $parameter) {

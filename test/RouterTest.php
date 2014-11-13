@@ -1,6 +1,8 @@
 <?php
 namespace Croute;
 
+use Croute\Event\BeforeActionEvent;
+use Croute\Event\RequestEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -141,6 +143,50 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
         $router = new Router($factory, $mockDispatcher);
         $router->route($request);
+    }
+
+    public function testResponseFromRequestListener()
+    {
+        $factory = $this->getMockBuilder('Croute\\ControllerFactory')
+            ->disableOriginalConstructor()
+            ->setMethods(array('getController'))
+            ->getMock();
+        $factory->expects($this->never())
+            ->method('getController');
+
+        $dispatcher = new EventDispatcher();
+        $router = new Router($factory, $dispatcher);
+
+        $dispatcher->addListener('router.request', function(RequestEvent $event){
+            $event->setResponse(new Response('I\'m a teapot', 418));
+        });
+
+        $response = $router->route(Request::create('/'));
+        $this->assertEquals(418, $response->getStatusCode());
+        $this->assertEquals('I\'m a teapot', $response->getContent());
+    }
+
+    public function testResponseFromBeforeActionListener()
+    {
+        $factory = $this->getMockBuilder('Croute\\ControllerFactory')
+            ->disableOriginalConstructor()
+            ->setMethods(array('getController'))
+            ->getMock();
+        $factory->expects($this->once())
+            ->method('getController')
+            ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
+            ->willReturn(new RouterTestController());
+
+        $dispatcher = new EventDispatcher();
+        $router = new Router($factory, $dispatcher);
+
+        $dispatcher->addListener('router.before_action', function(BeforeActionEvent $event){
+            $event->setResponse(new Response('I\'m a teapot', 418));
+        });
+
+        $response = $router->route(Request::create('/'));
+        $this->assertEquals(418, $response->getStatusCode());
+        $this->assertEquals('I\'m a teapot', $response->getContent());
     }
 
     /**
