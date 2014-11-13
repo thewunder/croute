@@ -158,19 +158,16 @@ class Router
      */
     protected function invokeAction(ControllerInterface $controller, $actionMethod, Request $request)
     {
-        ob_start();
         $method = new \ReflectionMethod($controller, $actionMethod);
 
         if(!$method->isPublic()) {
             $controllerName = $request->attributes->get('controller');
-            ob_end_clean();
             return $this->handleError("Method '{$actionMethod}' on {$controllerName}Controller is not public", 500);
         }
 
         $beforeEvent = new BeforeActionEvent($request, $controller, $method);
         $response = $this->dispatchEvent('router.before_action', $beforeEvent);
         if($response) {
-            ob_end_clean();
             return $response;
         }
 
@@ -178,12 +175,12 @@ class Router
         foreach($method->getParameters() as $parameter) {
             $value = $request->get($parameter->getName());
             if($value === null && !$parameter->isOptional()) {
-                ob_end_clean();
                 return $this->handleError("Missing required parameter '{$parameter->getName()}'", 400);
             }
             $params[] = $value;
         }
 
+        ob_start();
         $response = null;
         try {
             $response = $method->invokeArgs($controller, $params);
