@@ -8,7 +8,7 @@ use Croute\Event\BeforeActionEvent;
 use Croute\Event\ControllerLoadedEvent;
 use Croute\Event\RequestEvent;
 use Croute\Event\RouterEvent;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,7 +20,7 @@ class Router
     /** @var ControllerFactoryInterface */
     protected $controllerFactory;
 
-    /** @var EventDispatcher */
+    /** @var EventDispatcherInterface */
     protected $dispatcher;
 
     /** @var ErrorHandlerInterface */
@@ -32,17 +32,17 @@ class Router
     /**
      * Returns an instance using the default controller factory implementation
      *
-     * @param EventDispatcher $dispatcher
+     * @param EventDispatcherInterface $dispatcher
      * @param array $controllerNamespaces Namespaces to search for controller classes
      * @param array $controllerDependencies Dependencies passed to controller constructor
      * @return Router
      */
-    public static function create(EventDispatcher $dispatcher, array $controllerNamespaces, array $controllerDependencies = [])
+    public static function create(EventDispatcherInterface $dispatcher, array $controllerNamespaces, array $controllerDependencies = [])
     {
         return new static(new ControllerFactory($controllerNamespaces, $controllerDependencies), $dispatcher);
     }
 
-    public function __construct(ControllerFactoryInterface $controllerFactory, EventDispatcher $dispatcher)
+    public function __construct(ControllerFactoryInterface $controllerFactory, EventDispatcherInterface $dispatcher)
     {
         $this->controllerFactory = $controllerFactory;
         $this->dispatcher = $dispatcher;
