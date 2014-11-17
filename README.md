@@ -106,16 +106,18 @@ successful request:
 
 1. router.request
 1. router.controller_loaded
-1. router.controller_loaded.Index
+1. router.controller_loaded.{ControllerName}
 1. router.before_action
-1. router.before_action.Index
-1. router.before_action.Index.indexAction
+1. router.before_action.{ControllerName}
+1. router.before_action.{ControllerName}.{actionName}
 1. router.after_action
-1. router.after_action.Index
-1. router.after_action.Index.indexAction
+1. router.after_action.{ControllerName}
+1. router.after_action.{ControllerName}.{actionName}
 1. router.response_sent
-1. router.response_sent.Index
-1. router.response_sent.Index.indexAction
+1. router.response_sent.{ControllerName}
+1. router.response_sent.{ControllerName}.{actionName}
+
+The {ControllerName} will be sans 'Controller' and {actionName} sans 'Action' i.e IndexController::indexAction -> router.before_action.Index.index.
 
 At any time before the response is sent, in an event listener you can set a response on the event to bypass the action and send instead.
 
