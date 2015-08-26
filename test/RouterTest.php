@@ -106,7 +106,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $mockController->expects($this->once())->method('paramsAction')
-            ->with($this->equalTo('Hello'), $this->equalTo('World'));
+            ->with($this->equalTo('Hello'), $this->equalTo('defaultValue'));
 
         $factory = $this->getMockBuilder('Croute\\ControllerFactory')
             ->disableOriginalConstructor()
@@ -118,7 +118,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
         $router = new Router($factory, new EventDispatcher());
 
-        $response = $router->route(Request::create('/params?required=Hello&optional=World'));
+        $response = $router->route(Request::create('/params?required=Hello'));
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -316,7 +316,7 @@ class RouterTestController extends Controller
     {
     }
 
-    public function paramsAction($required, $optional = null)
+    public function paramsAction($required, $optional = 'defaultValue')
     {
     }
 

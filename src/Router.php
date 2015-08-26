@@ -174,8 +174,12 @@ class Router
         $params = [];
         foreach($method->getParameters() as $parameter) {
             $value = $request->get($parameter->getName());
-            if($value === null && !$parameter->isOptional()) {
-                return $this->handleError("Missing required parameter '{$parameter->getName()}'", 400);
+            if($value === null) {
+                if($parameter->isOptional()) {
+                    $value = $parameter->getDefaultValue();
+                } else {
+                    return $this->handleError("Missing required parameter '{$parameter->getName()}'", 400);
+                }
             }
             $params[] = $value;
         }
