@@ -22,6 +22,6 @@
     },
     "require-dev": {
         "mikey179/vfsStream": "~1.0",
-        "satooshi/php-coveralls": "dev-master"
+        "satooshi/php-coveralls": "~1.0"
     }
 }
