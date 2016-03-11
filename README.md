@@ -28,38 +28,41 @@ Basics
 
 Your index.php should look something like this:
 
-    $router = Router::create($eventDispatcher, ['Your\\Controller\\Namespace'], [$dependency1, $dependency2]);
-    $router->route($request);
+```php
+$router = Router::create($eventDispatcher, ['Your\\Controller\\Namespace'], [$dependency1, $dependency2]);
+$router->route($request);
+```
 
 Your controllers should look something like this:
 
-    namespace Your\Controller\Namespace
-    
-    class IndexController extends Croute\Controller
+```php
+namespace Your\Controller\Namespace
+
+class IndexController extends Croute\Controller
+{
+    public function __construct($dependency1, $dependency2)
     {
-        public function __construct($dependency1, $dependency2)
-        {
-            //...
-        }
-        
-        /**
-         * Will be available at http://yourdomain/
-         * and require the "required" (body or querystring) request parameter 
-         */
-        public function indexAction($required, $optional = null)
-        {
-            echo 'Crouter Controller'; //you can echo or return a symfony Response
-        }
-        
-        /**
-         * Available at http://yourdomain/test
-         */
-        public function testAction()
-        {
-            return new Response('Test Action');
-        }
+        //...
     }
 
+    /**
+     * Will be available at http://yourdomain/
+     * and require the "required" (body or querystring) request parameter
+     */
+    public function indexAction($required, $optional = null)
+    {
+        echo 'Crouter Controller'; //you can echo or return a symfony Response
+    }
+
+    /**
+     * Available at http://yourdomain/test
+     */
+    public function testAction()
+    {
+        return new Response('Test Action');
+    }
+}
+```
 The name of the controller determines which url it appears as:
 
 * http://yourdomain/my/ -> Your\Controller\Namespace\MyController::indexAction()
@@ -75,28 +78,34 @@ Annotations
 Croute optionally supports controller and action annotations through the excellent [minime/annotations](https://github.com/marcioAlmada/annotations)
 library.  To add an annotation handler simply:
 
-    $router->addAnnotationHandler($myhandler);
+```php
+$router->addAnnotationHandler($myhandler);
+```
 
 Two annotations are included (but must be added) out of the box @httpMethod and @secure.
 
 ### @httpMethod
 
 Restricts the allowed http methods.  Returns a 400 response if the method does not match.
- 
+
+```php
     /**
      * @httpMethod POST
      */
     public function saveAction()
-    
+```
+
 ### @secure
 
 Requires a secure connection.  If the connection is not https send a 301 redirect to the same url with the https protocol.
 
+```php
     /**
      * @secure
      */
     class IndexController extends Controller
     {
+```
 
 Events
 ------
@@ -121,10 +130,12 @@ The {ControllerName} will be sans 'Controller' and {actionName} sans 'Action' i.
 
 At any time before the response is sent, in an event listener you can set a response on the event to bypass the action and send instead.
 
+```php
     public function myListener(ControllerLoadedEvent $event)
     {
         $event->setResponse(new Response('PermissionDenied', 403));
     }
+```
 
 Error Handling
 --------------
