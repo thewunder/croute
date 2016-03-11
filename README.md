@@ -100,11 +100,11 @@ Restricts the allowed http methods.  Returns a 400 response if the method does n
 Requires a secure connection.  If the connection is not https send a 301 redirect to the same url with the https protocol.
 
 ```php
-    /**
-     * @secure
-     */
-    class IndexController extends Controller
-    {
+/**
+ * @secure
+ */
+class IndexController extends Controller
+{
 ```
 
 Events
