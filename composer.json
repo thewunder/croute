@@ -16,8 +16,8 @@
     },
     "require": {
         "php": ">=5.4",
-        "symfony/http-foundation": "~2.0",
-        "symfony/event-dispatcher": "~2.0",
+        "symfony/http-foundation": "~2.0|3.0.*",
+        "symfony/event-dispatcher": "~2.0|3.0.*",
         "minime/annotations": "~2.0"
     },
     "require-dev": {
