@@ -1,7 +1,6 @@
 <?php
 namespace Croute;
 
-
 use Symfony\Component\HttpFoundation\Request;
 
 interface ControllerFactoryInterface

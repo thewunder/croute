@@ -55,7 +55,7 @@ class Router
      */
     public function addAnnotationHandler(AnnotationHandlerInterface $handler)
     {
-        if(isset($this->annotationHandlers[$handler->getName()])) {
+        if (isset($this->annotationHandlers[$handler->getName()])) {
             throw new \InvalidArgumentException($handler->getName() . ' is already registered');
         }
 
@@ -71,7 +71,7 @@ class Router
      */
     public function removeAnnotationHandler($name)
     {
-        if(!isset($this->annotationHandlers[$name])) {
+        if (!isset($this->annotationHandlers[$name])) {
             throw new \InvalidArgumentException($name . ' is not registered');
         }
 
@@ -97,7 +97,7 @@ class Router
     {
         $requestEvent = new RequestEvent($request);
         $response = $this->dispatchEvent('router.request', $requestEvent);
-        if($response) {
+        if ($response) {
             return $this->sendResponse($request, $response);
         }
 
@@ -105,18 +105,18 @@ class Router
         $request->attributes->set('controller', $controllerName);
         $controller = $this->controllerFactory->getController($request, $controllerName);
 
-        if(!$controller) {
+        if (!$controller) {
             $response = $this->handleError('Unable to load '.$request->attributes->get('controller').'Controller.', 404);
         } else {
             $controller->setRequest($request);
             $controllerEvent = new ControllerLoadedEvent($request, $controller);
             $response = $this->dispatchEvent('router.controller_loaded', $controllerEvent);
-            if($response) {
+            if ($response) {
                 return $this->sendResponse($request, $response);
             }
 
             $actionMethod = $this->matchAction($controller, $request);
-            if(!$actionMethod) {
+            if (!$actionMethod) {
                 $controllerName = $request->attributes->get('controller');
                 $action = $request->attributes->get('action');
                 $response = $this->handleError("Method $action not found on {$controllerName}Controller", 404);
@@ -137,13 +137,13 @@ class Router
     {
         $path = $request->getPathInfo();
         $action = substr($path, strrpos($path, '/') + 1);
-        if(!$action) {
+        if (!$action) {
             $action = 'index';
         }
 
         $request->attributes->set('action', $action);
         $actionName = $action. 'Action';
-        if(method_exists($controller, $actionName)) {
+        if (method_exists($controller, $actionName)) {
             return $actionName;
         }
         return null;
@@ -160,22 +160,22 @@ class Router
     {
         $method = new \ReflectionMethod($controller, $actionMethod);
 
-        if(!$method->isPublic()) {
+        if (!$method->isPublic()) {
             $controllerName = $request->attributes->get('controller');
             return $this->handleError("Method '{$actionMethod}' on {$controllerName}Controller is not public", 500);
         }
 
         $beforeEvent = new BeforeActionEvent($request, $controller, $method);
         $response = $this->dispatchEvent('router.before_action', $beforeEvent);
-        if($response) {
+        if ($response) {
             return $response;
         }
 
         $params = [];
-        foreach($method->getParameters() as $parameter) {
+        foreach ($method->getParameters() as $parameter) {
             $value = $request->get($parameter->getName());
-            if($value === null) {
-                if($parameter->isOptional()) {
+            if ($value === null) {
+                if ($parameter->isOptional()) {
                     $value = $parameter->getDefaultValue();
                 } else {
                     return $this->handleError("Missing required parameter '{$parameter->getName()}'", 400);
@@ -188,8 +188,8 @@ class Router
         $response = null;
         try {
             $response = $method->invokeArgs($controller, $params);
-        } catch(\Exception $e) {
-            if($this->errorHandler) {
+        } catch (\Exception $e) {
+            if ($this->errorHandler) {
                 $response = $this->errorHandler->handleException($e);
             } else {
                 ob_end_clean();
@@ -197,7 +197,7 @@ class Router
             }
         }
 
-        if(!$response instanceof Response) {
+        if (!$response instanceof Response) {
             $response = new Response(ob_get_clean());
         } else {
             ob_end_clean();
@@ -237,18 +237,18 @@ class Router
         try {
             $this->dispatcher->dispatch($eventName, $event);
             $request = $event->getRequest();
-            if($request->attributes->has('controller')) {
+            if ($request->attributes->has('controller')) {
                 $controllerName = $request->attributes->get('controller');
                 $this->dispatcher->dispatch($eventName . ".$controllerName", $event);
-                if($request->attributes->has('action')) {
+                if ($request->attributes->has('action')) {
                     $actionName = $request->attributes->get('action');
                     $this->dispatcher->dispatch($eventName . ".$controllerName.$actionName", $event);
                 }
             }
-        } catch(\Exception $e) {
-            if($this->errorHandler) {
+        } catch (\Exception $e) {
+            if ($this->errorHandler) {
                 $response = $this->errorHandler->handleException($e);
-                if($response instanceof Response) {
+                if ($response instanceof Response) {
                     $event->setResponse($response);
                 }
             } else {
@@ -256,7 +256,7 @@ class Router
             }
         }
 
-        if($event->getResponse() && $eventName != 'router.after_action' && $eventName != 'router.response_sent') {
+        if ($event->getResponse() && $eventName != 'router.after_action' && $eventName != 'router.response_sent') {
             return $event->getResponse();
         }
 
@@ -270,7 +270,7 @@ class Router
      */
     protected function handleError($message, $code = 404)
     {
-        if(!$this->errorHandler) {
+        if (!$this->errorHandler) {
             $response = new Response(Response::$statusTexts[$code], $code);
         } else {
             $response = $this->errorHandler->displayErrorPage($code, $message);

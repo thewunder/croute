@@ -1,7 +1,6 @@
 <?php
 namespace Croute\Annotation;
 
-
 use Croute\Event\BeforeActionEvent;
 use Croute\Event\ControllerLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

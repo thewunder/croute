@@ -23,7 +23,7 @@ abstract class AnnotationHandler implements AnnotationHandlerInterface
     public function __construct(ReaderInterface $reader)
     {
         $this->reader = $reader;
-        if(!$this->annotation) {
+        if (!$this->annotation) {
             throw new \LogicException('You must specify an annotation to handle');
         }
     }
@@ -49,7 +49,7 @@ abstract class AnnotationHandler implements AnnotationHandlerInterface
      * @param mixed $value
      * @param RouterEvent $event
      */
-    protected abstract function handleAnnotation($value, RouterEvent $event);
+    abstract protected function handleAnnotation($value, RouterEvent $event);
 
     public static function getSubscribedEvents()
     {

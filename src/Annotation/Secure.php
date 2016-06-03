@@ -17,7 +17,7 @@ class Secure extends AnnotationHandler
     protected function handleAnnotation($value, RouterEvent $event)
     {
         $request = $event->getRequest();
-        if(!$request->isSecure() && $value) {
+        if (!$request->isSecure() && $value) {
             $url = str_replace('http', 'https', $request->getSchemeAndHttpHost()) . $request->getRequestUri();
             $event->setResponse(new RedirectResponse($url, 301));
         }

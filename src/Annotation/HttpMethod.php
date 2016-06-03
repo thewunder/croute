@@ -15,17 +15,17 @@ class HttpMethod extends AnnotationHandler
 
     protected function handleAnnotation($value, RouterEvent $event)
     {
-        if($value) {
-            if(is_bool($value)) {
+        if ($value) {
+            if (is_bool($value)) {
                 throw new \InvalidArgumentException('You must specify which HTTP method(s) you require.');
             }
 
-            if(is_string($value)) {
+            if (is_string($value)) {
                 $value = [$value];
             }
 
             $value = array_map('strtoupper', $value);
-            if(!in_array($event->getRequest()->getMethod(), $value)) {
+            if (!in_array($event->getRequest()->getMethod(), $value)) {
                 $event->setResponse(new Response('Invalid http method', 400));
             }
         }
