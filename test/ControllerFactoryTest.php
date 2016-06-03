@@ -12,7 +12,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $request = Request::create('/');
         $controllerName = $factory->getControllerName($request);
         $controller = $factory->getController($request, $controllerName);
-        $this->assertTrue($controller instanceof IndexController);
+        $this->assertTrue($controller instanceof Fixtures\Controller\IndexController);
     }
 
     public function testNamedController()
@@ -22,7 +22,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $request = Request::create('/named/');
         $controllerName = $factory->getControllerName($request);
         $controller = $factory->getController($request, $controllerName);
-        $this->assertTrue($controller instanceof NamedController);
+        $this->assertTrue($controller instanceof Fixtures\Controller\NamedController);
     }
 
     public function testSanitization()
@@ -41,12 +41,12 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
         $request = Request::create('/myNamespace/');
         $controllerName = $factory->getControllerName($request);
         $controller = $factory->getController($request, $controllerName);
-        $this->assertTrue($controller instanceof \Croute\MyNamespace\IndexController);
+        $this->assertTrue($controller instanceof Fixtures\Controller\MyNamespace\IndexController);
 
         $request = Request::create('/myNamespace/named/');
         $controllerName = $factory->getControllerName($request);
         $controller = $factory->getController($request, $controllerName);
-        $this->assertTrue($controller instanceof \Croute\MyNamespace\NamedController);
+        $this->assertTrue($controller instanceof Fixtures\Controller\MyNamespace\NamedController);
     }
 
     public function testControllerNotFound()
@@ -74,26 +74,6 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
     protected function getFactory()
     {
-        return new ControllerFactory(['Croute'], []);
+        return new ControllerFactory(['Croute\\Fixtures\\Controller'], []);
     }
-}
-
-class IndexController extends Controller
-{
-}
-
-class NamedController extends Controller
-{
-}
-
-namespace Croute\MyNamespace;
-
-use Croute\Controller;
-
-class IndexController extends Controller
-{
-}
-
-class NamedController extends Controller
-{
 }

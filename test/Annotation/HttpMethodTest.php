@@ -1,9 +1,9 @@
 <?php
 namespace Croute\Annotation;
 
-use Croute\Controller;
 use Croute\Event\BeforeActionEvent;
 use Croute\Event\ControllerLoadedEvent;
+use Croute\Fixtures\Controller\HttpMethodTestController;
 use Minime\Annotations\Reader;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -91,37 +91,5 @@ class HttpMethodTest extends \PHPUnit_Framework_TestCase
     protected function getHandler()
     {
         return new HttpMethod(Reader::createFromDefaults());
-    }
-}
-
-/**
- * @httpMethod post
- */
-class HttpMethodTestController extends Controller
-{
-
-    public function noAnnotationAction()
-    {
-    }
-
-    /**
-     * @httpMethod DELETE
-     */
-    public function singleAnnotationAction()
-    {
-    }
-
-    /**
-     * @httpMethod ["PUT", "POST"]
-     */
-    public function multipleAnnotationAction()
-    {
-    }
-
-    /**
-     * @httpMethod
-     */
-    public function noHttpMethodSpecifiedAction()
-    {
     }
 }

@@ -101,7 +101,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
     public function testParams()
     {
-        $mockController = $this->getMockBuilder('Croute\\RouterTestController')
+        $mockController = $this->getMockBuilder('Croute\\Fixtures\\Controller\\RouterTestController')
             ->setMethods(array('paramsAction'))
             ->getMock();
 
@@ -139,7 +139,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $factory->expects($this->any())
             ->method('getController')
-            ->willReturn(new RouterTestController());
+            ->willReturn(new Fixtures\Controller\RouterTestController());
 
         $router = new Router($factory, $mockDispatcher);
         $router->route($request);
@@ -175,7 +175,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $factory->expects($this->once())
             ->method('getController')
             ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new RouterTestController());
+            ->willReturn(new Fixtures\Controller\RouterTestController());
 
         $dispatcher = new EventDispatcher();
         $router = new Router($factory, $dispatcher);
@@ -211,7 +211,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $factory->expects($this->any())
             ->method('getController')
             ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new RouterTestController());
+            ->willReturn(new Fixtures\Controller\RouterTestController());
         $dispatcher = new EventDispatcher();
         $dispatcher->addListener('router.controller_loaded', function () {
             throw new \RuntimeException('Explode');
@@ -254,7 +254,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $factory->expects($this->once())
             ->method('getController')
             ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new RouterTestController());
+            ->willReturn(new Fixtures\Controller\RouterTestController());
         $dispatcher = new EventDispatcher();
         $dispatcher->addListener('router.controller_loaded', function () {
             throw new \RuntimeException('Explode');
@@ -305,32 +305,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $factory->expects($this->once())
             ->method('getController')
             ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new RouterTestController());
+            ->willReturn(new Fixtures\Controller\RouterTestController());
         return new Router($factory, new EventDispatcher());
-    }
-}
-
-class RouterTestController extends Controller
-{
-    public function indexAction()
-    {
-    }
-
-    public function paramsAction($required, $optional = 'defaultValue')
-    {
-    }
-
-    public function returnAction()
-    {
-        return new Response('Hello');
-    }
-
-    public function exceptionAction()
-    {
-        throw new \RuntimeException('Explode');
-    }
-
-    protected function protectedAction()
-    {
     }
 }

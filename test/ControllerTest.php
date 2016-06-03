@@ -1,6 +1,7 @@
 <?php
 namespace Croute;
 
+use Croute\Fixtures\Controller\NamedController;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
@@ -63,11 +64,11 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return TestController
+     * @return NamedController
      */
     protected function getController()
     {
-        $controller = new TestController();
+        $controller = new NamedController();
         $controller->setRequest(Request::create('/'));
         return $controller;
     }
@@ -82,8 +83,4 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $method->setAccessible(true);
         return $method;
     }
-}
-
-class TestController extends Controller
-{
 }
