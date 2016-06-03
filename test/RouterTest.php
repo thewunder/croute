@@ -62,7 +62,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         try {
             $router->addAnnotationHandler($mock);
             $this->fail('Should have thrown illegal argument exception');
-        } catch(\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             //expected
         }
 
@@ -85,7 +85,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         try {
             $router->removeAnnotationHandler('asdf');
             $this->fail('Should have thrown illegal argument exception');
-        } catch(\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             //expected
         }
 
@@ -157,7 +157,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $dispatcher = new EventDispatcher();
         $router = new Router($factory, $dispatcher);
 
-        $dispatcher->addListener('router.request', function(RequestEvent $event){
+        $dispatcher->addListener('router.request', function (RequestEvent $event) {
             $event->setResponse(new Response('I\'m a teapot', 418));
         });
 
@@ -180,7 +180,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $dispatcher = new EventDispatcher();
         $router = new Router($factory, $dispatcher);
 
-        $dispatcher->addListener('router.before_action', function(BeforeActionEvent $event){
+        $dispatcher->addListener('router.before_action', function (BeforeActionEvent $event) {
             $event->setResponse(new Response('I\'m a teapot', 418));
         });
 
@@ -213,7 +213,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
             ->willReturn(new RouterTestController());
         $dispatcher = new EventDispatcher();
-        $dispatcher->addListener('router.controller_loaded', function() {
+        $dispatcher->addListener('router.controller_loaded', function () {
             throw new \RuntimeException('Explode');
         });
         $router = new Router($factory, $dispatcher);
@@ -256,7 +256,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
             ->willReturn(new RouterTestController());
         $dispatcher = new EventDispatcher();
-        $dispatcher->addListener('router.controller_loaded', function() {
+        $dispatcher->addListener('router.controller_loaded', function () {
             throw new \RuntimeException('Explode');
         });
         $router = new Router($factory, $dispatcher);

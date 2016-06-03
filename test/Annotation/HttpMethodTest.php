@@ -79,7 +79,7 @@ class HttpMethodTest extends \PHPUnit_Framework_TestCase
         try {
             $handler->handleActionAnnotations($event);
             $this->fail('Invalid argument exception not thrown');
-        } catch(\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             //expected
         }
 
