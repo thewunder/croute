@@ -145,11 +145,9 @@ Proper error handling is not really something that I can do for you.  It's up to
 To handle errors, implement the EventHandlerInterface and set your error handler on the router.  Your class will be called when common routing events occur
 (i.e. 404 errors) and when there is an exception during the routing process.
 
-Contributions
--------------
+## Contributing
 
-Yes please!  This library is currently a one man show, and it works great for me.  Please let me know if you have any ideas on improving croute.
-
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 [ico-version]: https://img.shields.io/packagist/v/thewunder/croute.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
