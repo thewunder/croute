@@ -15,7 +15,7 @@
         "psr-4": { "Croute\\" : "src/" }
     },
     "autoload-dev": {
-        "psr-4": { "Croute\\Fixtures": "test/Fixtures"}
+        "psr-4": { "Croute\\Fixtures\\": "test/Fixtures"}
     },
     "require": {
         "php": ">=5.4",
