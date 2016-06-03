@@ -1,6 +1,7 @@
 Croute
 ======
-
+[![Latest Version on Packagist][ico-version]][link-packagist]
+[![Software License][ico-license]](LICENSE.txt)
 [![Build Status](https://api.travis-ci.org/thewunder/croute.svg?branch=master)](https://travis-ci.org/thewunder/croute)
 [![Coverage Status](https://img.shields.io/coveralls/thewunder/croute.svg)](https://coveralls.io/r/thewunder/croute)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/11efe3a2-9566-4904-8e40-0d69efed7b02/mini.png)](https://insight.sensiolabs.com/projects/11efe3a2-9566-4904-8e40-0d69efed7b02)
@@ -148,3 +149,11 @@ Contributions
 -------------
 
 Yes please!  This library is currently a one man show, and it works great for me.  Please let me know if you have any ideas on improving croute.
+
+
+[ico-version]: https://img.shields.io/packagist/v/thewunder/croute.svg?style=flat-square
+[ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/thewunder/croute.svg?style=flat-square
+
+[link-packagist]: https://packagist.org/packages/thewunder/croute
+[link-downloads]: https://packagist.org/packages/thewunder/croute
