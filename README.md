@@ -151,7 +151,5 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 [ico-version]: https://img.shields.io/packagist/v/thewunder/croute.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/thewunder/croute.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/thewunder/croute
-[link-downloads]: https://packagist.org/packages/thewunder/croute
