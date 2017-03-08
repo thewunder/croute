@@ -26,7 +26,7 @@ class HttpMethod extends AnnotationHandler
 
             $value = array_map('strtoupper', $value);
             if (!in_array($event->getRequest()->getMethod(), $value)) {
-                $event->setResponse(new Response('Invalid http method', 400));
+                $event->setResponse(new Response('Invalid http method', Response::HTTP_METHOD_NOT_ALLOWED));
             }
         }
     }

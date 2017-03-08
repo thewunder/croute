@@ -16,7 +16,7 @@ class HttpMethodTest extends \PHPUnit_Framework_TestCase
         $request = Request::create('/');
         $event = new ControllerLoadedEvent($request, new HttpMethodTestController());
         $handler->handleControllerAnnotations($event);
-        $this->assertEquals(400, $event->getResponse()->getStatusCode());
+        $this->assertEquals(405, $event->getResponse()->getStatusCode());
 
         $request = Request::create('/', 'POST');
         $event = new ControllerLoadedEvent($request, new HttpMethodTestController());
@@ -32,7 +32,7 @@ class HttpMethodTest extends \PHPUnit_Framework_TestCase
         $controller = new HttpMethodTestController();
         $event = new BeforeActionEvent($request, $controller, new \ReflectionMethod($controller, 'singleAnnotationAction'));
         $handler->handleActionAnnotations($event);
-        $this->assertEquals(400, $event->getResponse()->getStatusCode());
+        $this->assertEquals(405, $event->getResponse()->getStatusCode());
 
         $request = Request::create('/', 'DELETE');
         $controller = new HttpMethodTestController();
@@ -49,7 +49,7 @@ class HttpMethodTest extends \PHPUnit_Framework_TestCase
         $controller = new HttpMethodTestController();
         $event = new BeforeActionEvent($request, $controller, new \ReflectionMethod($controller, 'multipleAnnotationAction'));
         $handler->handleActionAnnotations($event);
-        $this->assertEquals(400, $event->getResponse()->getStatusCode());
+        $this->assertEquals(405, $event->getResponse()->getStatusCode());
 
         $request = Request::create('/', 'PUT');
         $controller = new HttpMethodTestController();
