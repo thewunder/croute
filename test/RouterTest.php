@@ -79,18 +79,18 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
         $mock->expects($this->exactly(2))->method('getName')->willReturn('httpMethod');
 
-        $router = $this->getRouter();
+        $router = Router::create(new EventDispatcher(), []);
         $router->addAnnotationHandler($mock);
         $router->removeAnnotationHandler('httpMethod');
+    }
 
-        try {
-            $router->removeAnnotationHandler('asdf');
-            $this->fail('Should have thrown illegal argument exception');
-        } catch (\InvalidArgumentException $e) {
-            //expected
-        }
-
-        $router->route(Request::create('/'));
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testRemoveMissingAnnotationHandler()
+    {
+        $router = Router::create(new EventDispatcher(), []);
+        $router->removeAnnotationHandler('httpMethod');
     }
 
     public function testReturn()
