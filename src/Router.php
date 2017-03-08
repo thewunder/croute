@@ -11,6 +11,13 @@ use Croute\Event\RouterEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
  * Primary entry point for routing
@@ -29,6 +36,9 @@ class Router
     /** @var AnnotationHandlerInterface[]  */
     protected $annotationHandlers = [];
 
+    /** @var RouteCollection */
+    protected $routes;
+
     /**
      * Returns an instance using the default controller factory implementation
      *
@@ -46,6 +56,61 @@ class Router
     {
         $this->controllerFactory = $controllerFactory;
         $this->dispatcher = $dispatcher;
+        $this->routes = new RouteCollection();
+    }
+
+    /**
+     * Adds a custom route
+     *
+     * Example:
+     * $router->addRoute('/myCustomPath/{param1}', 'GET', 'Namespace\\Custom', 'special')
+     *
+     * Will call \\ControllerNamespace\\Namespace\\CustomController::specialAction($param1) for GET requests
+     *
+     *
+     * @param string $path
+     * @param string|array $methods A required HTTP method or an array of methods
+     * @param string $controller Controller class minus the controller namespace and 'Controller'
+     * @param string $action Action name if omitted last part of path will be used to determine the action
+     *
+     * @return $this
+     */
+    public function addRoute($path, $methods, $controller, $action = null)
+    {
+        if($action) {
+            $controller = $controller . '::' . $action;
+        }
+        $route = new Route($path, ['_controller'=>$controller], [], [], '', [], $methods);
+
+        if(is_array($methods)) {
+            $methods = implode('|', $methods);
+        }
+        $this->routes->add($controller.$methods, $route);
+        return $this;
+    }
+
+    /**
+     * Adds a custom route by providing a symfony Route object. Allows for many more other options compared to addRoute().
+     *
+     * Example:
+     * $router->addCustomRoute('custom_route',
+     * new Route('/myCustomPath/{param1}', ['_controller'=>'Namespace\\Custom::special']))
+     *
+     * Will call \\ControllerNamespace\\Namespace\\CustomController::specialAction($param1) for all HTTP request methods
+     *
+     *
+     * @param string $name
+     * @param Route $route
+     * @return $this
+     */
+    public function addCustomRoute($name, Route $route)
+    {
+        if(!$route->getDefault('_controller')) {
+            throw new \InvalidArgumentException('You must specify a _controller');
+        }
+
+        $this->routes->add($name, $route);
+        return $this;
     }
 
     /**
@@ -101,7 +166,28 @@ class Router
             return $this->sendResponse($request, $response);
         }
 
-        $controllerName = $this->controllerFactory->getControllerName($request);
+        $controllerName = null;
+        $actionMethod = null;
+
+        $matcher = $this->getUrlMatcher($request);
+        try {
+            $match = $matcher->match($request->getPathInfo());
+            $controllerName = $match['_controller'];
+            if(strpos($controllerName, '::') !== false) {
+                list($controllerName, $actionMethod) = explode('::', $controllerName);
+                if(strrpos($actionMethod, 'Action') === false) {
+                    $actionMethod .= 'Action';
+                }
+            }
+            foreach ($match as $key => $value) {
+                $request->attributes->set($key, $value);
+            }
+        } catch (ResourceNotFoundException $notFoundException) {
+            $controllerName = $this->controllerFactory->getControllerName($request);
+        } catch (MethodNotAllowedException $notAllowedException) {
+            return $this->sendResponse($request, new Response('Invalid http method', Response::HTTP_METHOD_NOT_ALLOWED));
+        }
+
         $request->attributes->set('controller', $controllerName);
         $controller = $this->controllerFactory->getController($request, $controllerName);
 
@@ -115,7 +201,10 @@ class Router
                 return $this->sendResponse($request, $response);
             }
 
-            $actionMethod = $this->matchAction($controller, $request);
+            if(!$actionMethod) {
+                $actionMethod = $this->matchAction($controller, $request);
+            }
+
             if (!$actionMethod) {
                 $controllerName = $request->attributes->get('controller');
                 $action = $request->attributes->get('action');
@@ -126,6 +215,16 @@ class Router
         }
 
         return $this->sendResponse($request, $response);
+    }
+
+    /**
+     * @param Request $request
+     * @return UrlMatcherInterface
+     */
+    protected function getUrlMatcher(Request $request)
+    {
+        $context = new RequestContext();
+        return new UrlMatcher($this->routes, $context->fromRequest($request));
     }
 
     /**
@@ -156,7 +255,7 @@ class Router
      * @throws \Exception
      * @return Response
      */
-    protected function invokeAction(ControllerInterface $controller, $actionMethod, Request $request)
+    protected function invokeAction(ControllerInterface $controller, $actionMethod, Request $request, array $params = null)
     {
         $method = new \ReflectionMethod($controller, $actionMethod);
 

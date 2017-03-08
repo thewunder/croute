@@ -6,6 +6,7 @@ use Croute\Event\RequestEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Route;
 
 class RouterTest extends \PHPUnit_Framework_TestCase
 {
@@ -235,6 +236,48 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $router->setErrorHandler($mockErrorHandler);
         $response = $router->route(Request::create('/exception'));
         $this->assertEquals(500, $response->getStatusCode());
+    }
+
+    public function testAddRoute()
+    {
+        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router->addRoute('/custom/{input}/static', 'GET', 'RouterTest', 'echo');
+        $response = $router->route(Request::create('/custom/xyz/static'));
+        $this->assertEquals('xyz', $response->getContent());
+    }
+
+    public function testAddRouteNoAction()
+    {
+        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router->addRoute('/custom/{input}/return', 'GET', 'RouterTest');
+        $response = $router->route(Request::create('/custom/xyz/return'));
+        $this->assertEquals('Hello', $response->getContent());
+    }
+
+    public function testAddRouteInvalidMethod()
+    {
+        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router->addRoute('/custom/{input}', 'POST', 'RouterTest', 'echo');
+        $response = $router->route(Request::create('/custom/xyz'));
+        $this->assertEquals(405, $response->getStatusCode());
+    }
+
+    public function testAddCustomRoute()
+    {
+        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router->addCustomRoute('custom_route', new Route('/custom/{input}', ['_controller'=>'RouterTest::echo']));
+        $response = $router->route(Request::create('/custom/xyz'));
+        $this->assertEquals('xyz', $response->getContent());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testAddCustomRouteMissingController()
+    {
+        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router->addCustomRoute('custom_route', new Route('/custom/{input}'));
+        $router->route(Request::create('/custom/xyz'));
     }
 
     public function testErrorHandlerExceptionInListener()

@@ -14,6 +14,11 @@ class RouterTestController extends Controller
     {
     }
 
+    public function echoAction($input)
+    {
+        return new Response($input);
+    }
+
     public function returnAction()
     {
         return new Response('Hello');
