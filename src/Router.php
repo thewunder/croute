@@ -5,6 +5,7 @@ use Croute\Annotation\AnnotationHandlerInterface;
 use Croute\Event\AfterActionEvent;
 use Croute\Event\AfterSendEvent;
 use Croute\Event\BeforeActionEvent;
+use Croute\Event\BeforeSendEvent;
 use Croute\Event\ControllerLoadedEvent;
 use Croute\Event\RequestEvent;
 use Croute\Event\RouterEvent;
@@ -385,6 +386,7 @@ class Router
      */
     protected function sendResponse(Request $request, Response $response)
     {
+        $this->dispatcher->dispatch('router.before_response_sent', new BeforeSendEvent($request, $response));
         $response->prepare($request);
         $response->send();
         $this->dispatchEvent('router.response_sent', new AfterSendEvent($request, $response));

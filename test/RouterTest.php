@@ -131,8 +131,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
         $request = Request::create('/');
 
-        // 12 = 1 request, 2 controller loaded, 3 before action, 3 after after, 3 response sent
-        $mockDispatcher->expects($this->exactly(12))->method('dispatch');
+        // 12 = 1 request, 2 controller loaded, 3 before action, 3 after after, 1 before sent, 3 response sent
+        $mockDispatcher->expects($this->exactly(13))->method('dispatch');
 
         $factory = $this->getMockBuilder('Croute\\ControllerFactory')
             ->disableOriginalConstructor()

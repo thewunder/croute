@@ -123,6 +123,7 @@ successful request:
 1. router.after_action
 1. router.after_action.{ControllerName}
 1. router.after_action.{ControllerName}.{actionName}
+1. router.before_sent
 1. router.response_sent
 1. router.response_sent.{ControllerName}
 1. router.response_sent.{ControllerName}.{actionName}
