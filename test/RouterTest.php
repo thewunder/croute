@@ -246,6 +246,17 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('xyz', $response->getContent());
     }
 
+    public function testAddRoutes()
+    {
+        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router->addRoutes([['/custom/{input}/static', 'GET', 'RouterTest', 'echo'],
+            ['/custom/{input}/asdf', 'GET', 'RouterTest', 'return']]);
+        $response = $router->route(Request::create('/custom/xyz/static'));
+        $this->assertEquals('xyz', $response->getContent());
+        $response = $router->route(Request::create('/custom/xyz/asdf'));
+        $this->assertEquals('Hello', $response->getContent());
+    }
+
     public function testAddRouteNoAction()
     {
         $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);

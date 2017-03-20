@@ -91,6 +91,24 @@ class Router
     }
 
     /**
+     * Add multiple routes at once
+     *
+     * @see addRoute for format and example
+     *
+     * @param array $routes
+     */
+    public function addRoutes(array $routes)
+    {
+        foreach ($routes as $route) {
+            $count = count($route);
+            if($count < 3 || $count > 4) {
+                throw new \InvalidArgumentException('Each route must be: path, method(s), controller, [action]');
+            }
+            call_user_func_array([$this, 'addRoute'], $route);
+        }
+    }
+
+    /**
      * Adds a custom route by providing a symfony Route object. Allows for many more other options compared to addRoute().
      *
      * Example:
