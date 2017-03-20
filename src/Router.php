@@ -86,7 +86,7 @@ class Router
         if(is_array($methods)) {
             $methods = implode('|', $methods);
         }
-        $this->routes->add($controller.$methods, $route);
+        $this->routes->add($path.':'.$methods, $route);
         return $this;
     }
 
