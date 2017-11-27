@@ -46,13 +46,14 @@ abstract class Controller implements ControllerInterface
     }
 
     /**
-     * @param $file
+     * @param string|\SplFileInfo $file
+     * @param string $disposition attachment or inline
      * @return BinaryFileResponse
      */
-    protected function fileDownload($file)
+    protected function fileDownload($file, $disposition = ResponseHeaderBag::DISPOSITION_ATTACHMENT)
     {
         $response = new BinaryFileResponse($file);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+        $response->setContentDisposition($disposition);
         return $response;
     }
 
