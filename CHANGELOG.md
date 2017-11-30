@@ -1,3 +1,11 @@
+Version 1.3
+===========
+
+New Features
+------------
+* Allow Symfony 4 components
+* Tested in PHP 7.2
+
 Version 1.2
 ===========
 
