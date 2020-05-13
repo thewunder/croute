@@ -347,23 +347,24 @@ class Router
      *
      * @param $eventName
      * @param RouterEvent $event
-     * @throws \Exception
      * @return Response
+     *
+     * @throws \Throwable
      */
     private function dispatchEvent($eventName, RouterEvent $event)
     {
         try {
-            $this->dispatcher->dispatch($eventName, $event);
+            $this->dispatcher->dispatch($event, $eventName);
             $request = $event->getRequest();
             if ($request->attributes->has('controller')) {
                 $controllerName = $request->attributes->get('controller');
-                $this->dispatcher->dispatch($eventName . ".$controllerName", $event);
+                $this->dispatcher->dispatch($event, $eventName . ".$controllerName");
                 if ($request->attributes->has('action')) {
                     $actionName = $request->attributes->get('action');
-                    $this->dispatcher->dispatch($eventName . ".$controllerName.$actionName", $event);
+                    $this->dispatcher->dispatch($event, $eventName . ".$controllerName.$actionName");
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             if ($this->errorHandler) {
                 $response = $this->errorHandler->handleException($e);
                 if ($response instanceof Response) {
@@ -404,7 +405,7 @@ class Router
      */
     protected function sendResponse(Request $request, Response $response)
     {
-        $this->dispatcher->dispatch('router.before_response_sent', new BeforeSendEvent($request, $response));
+        $this->dispatcher->dispatch(new BeforeSendEvent($request, $response), 'router.before_response_sent');
         $response->prepare($request);
         $response->send();
         $this->dispatchEvent('router.response_sent', new AfterSendEvent($request, $response));
