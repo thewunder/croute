@@ -1,9 +1,10 @@
 <?php
 namespace Croute;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
+class ControllerFactoryTest extends TestCase
 {
     public function testIndexController()
     {

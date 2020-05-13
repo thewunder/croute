@@ -3,12 +3,13 @@ namespace Croute;
 
 use Croute\Event\BeforeActionEvent;
 use Croute\Event\RequestEvent;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Route;
 
-class RouterTest extends \PHPUnit_Framework_TestCase
+class RouterTest extends TestCase
 {
     public function testCreate()
     {

@@ -18,16 +18,16 @@
         "psr-4": { "Croute\\Fixtures\\": "test/Fixtures"}
     },
     "require": {
-        "php": ">=5.4",
+        "php": ">=7.1",
         "symfony/http-foundation": ">=2.0 <5.0",
         "symfony/event-dispatcher": ">=2.0 <5.0",
-        "minime/annotations": "~2.0|~3.0",
+        "minime/annotations": "~3.0",
         "symfony/routing": ">=2.0 <5.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~5.0",
-        "mikey179/vfsStream": "~1.0",
-        "satooshi/php-coveralls": "~1.0"
+        "mikey179/vfsstream": "~1.0",
+        "satooshi/php-coveralls": "~1.0",
+        "phpunit/phpunit": "~7.0"
     },
     "scripts": {
         "test": "vendor/bin/phpunit"

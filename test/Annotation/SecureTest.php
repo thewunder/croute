@@ -5,9 +5,10 @@ use Croute\Controller;
 use Croute\Event\BeforeActionEvent;
 use Croute\Event\ControllerLoadedEvent;
 use Minime\Annotations\Reader;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class SecureTest extends \PHPUnit_Framework_TestCase
+class SecureTest extends TestCase
 {
     public function testClassAnnotation()
     {

@@ -5,9 +5,10 @@ use Croute\Event\BeforeActionEvent;
 use Croute\Event\ControllerLoadedEvent;
 use Croute\Fixtures\Controller\HttpMethodTestController;
 use Minime\Annotations\Reader;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class HttpMethodTest extends \PHPUnit_Framework_TestCase
+class HttpMethodTest extends TestCase
 {
     public function testClassAnnotation()
     {
@@ -71,18 +72,13 @@ class HttpMethodTest extends \PHPUnit_Framework_TestCase
 
     public function testNoHttpMethodSpecified()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $handler = $this->getHandler();
 
         $request = Request::create('/');
         $controller = new HttpMethodTestController();
         $event = new BeforeActionEvent($request, $controller, new \ReflectionMethod($controller, 'noHttpMethodSpecifiedAction'));
-        try {
-            $handler->handleActionAnnotations($event);
-            $this->fail('Invalid argument exception not thrown');
-        } catch (\InvalidArgumentException $e) {
-            //expected
-        }
-
+        $handler->handleActionAnnotations($event);
     }
 
     /**

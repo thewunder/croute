@@ -6,13 +6,14 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
 use org\bovigo\vfs\vfsStreamWrapper;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ControllerTest extends \PHPUnit_Framework_TestCase
+class ControllerTest extends TestCase
 {
     public function testGetResponse()
     {
@@ -60,7 +61,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         /** @var Response $response */
         $response = $download->invoke($controller, vfsStream::url('unitTest/unitText.txt'));
         $this->assertTrue($response instanceof BinaryFileResponse);
-        $this->assertEquals('attachment; filename="unitText.txt"', $response->headers->get('Content-Disposition'));
+        $this->assertEquals('attachment; filename=unitText.txt', $response->headers->get('Content-Disposition'));
     }
 
     /**
