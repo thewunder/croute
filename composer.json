@@ -26,8 +26,8 @@
     },
     "require-dev": {
         "mikey179/vfsstream": "~1.0",
-        "satooshi/php-coveralls": "~1.0",
-        "phpunit/phpunit": "~7.0"
+        "phpunit/phpunit": "~7.0",
+        "php-coveralls/php-coveralls": "^2.2"
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
