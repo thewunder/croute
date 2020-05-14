@@ -1,3 +1,12 @@
+Version 1.4
+===========
+
+New Features
+------------
+* Require Symfony 5 components
+* Tested PHP 7.3 and 7.4, Require PHP 7.2
+* Upgrade to PhpUnit 8.x
+
 Version 1.3
 ===========
 
