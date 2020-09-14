@@ -348,7 +348,7 @@ class RouterTest extends TestCase
     {
         $factory = $this->getMockBuilder('Croute\\ControllerFactory')
             ->disableOriginalConstructor()
-            ->setMethods(array('getController'))
+            ->onlyMethods(['getController'])
             ->getMock();
         $factory->expects($this->once())
             ->method('getController')
