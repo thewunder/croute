@@ -23,7 +23,7 @@ abstract class Controller implements ControllerInterface
     /**
      * @return Request
      */
-    public function getRequest()
+    public function getRequest(): Request
     {
         return $this->request;
     }
@@ -31,18 +31,19 @@ abstract class Controller implements ControllerInterface
     /**
      * @param Request $request
      */
-    public function setRequest(Request $request)
+    public function setRequest(Request $request): void
     {
         $this->request = $request;
     }
 
     /**
-     * @param $url
-     * @return Response
+     * @param string $url
+     * @param int $status
+     * @return RedirectResponse
      */
-    protected function redirect($url)
+    protected function redirect(string $url, int $status = 302): RedirectResponse
     {
-        return RedirectResponse::create($url);
+        return new RedirectResponse($url, $status);
     }
 
     /**
@@ -50,7 +51,7 @@ abstract class Controller implements ControllerInterface
      * @param string $disposition attachment or inline
      * @return BinaryFileResponse
      */
-    protected function fileDownload($file, $disposition = ResponseHeaderBag::DISPOSITION_ATTACHMENT)
+    protected function fileDownload($file, string $disposition = ResponseHeaderBag::DISPOSITION_ATTACHMENT): BinaryFileResponse
     {
         $response = new BinaryFileResponse($file);
         $response->setContentDisposition($disposition);
@@ -58,20 +59,20 @@ abstract class Controller implements ControllerInterface
     }
 
     /**
-     * @param $data
+     * @param mixed $data
      * @param int $status
      * @return JsonResponse
      */
-    protected function json($data, $status = 200)
+    protected function json($data, int $status = 200): JsonResponse
     {
         return new JsonResponse($data, $status);
     }
 
     /**
-     * @param $text
+     * @param string $text
      * @return Response
      */
-    protected function notFound($text = 'Not Found')
+    protected function notFound(string $text = 'Not Found'): Response
     {
         return new Response($text, 404);
     }
