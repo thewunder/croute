@@ -10,11 +10,11 @@ interface ErrorHandlerInterface
      * @param null|string $message
      * @return Response
      */
-    public function displayErrorPage($code, $message = null);
+    public function displayErrorPage(int $code, $message = null): Response;
 
     /**
      * @param \Exception $e
      * @return Response
      */
-    public function handleException(\Exception $e);
+    public function handleException(\Exception $e): ?Response;
 }

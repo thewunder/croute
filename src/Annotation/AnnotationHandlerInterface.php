@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 interface AnnotationHandlerInterface extends EventSubscriberInterface
 {
-    public function getName();
+    public function getName(): string;
 
     public function handleControllerAnnotations(ControllerLoadedEvent $event);
 

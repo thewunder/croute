@@ -25,7 +25,7 @@ class ControllerFactory implements ControllerFactoryInterface
      * @param Request $request
      * @return string
      */
-    public function getControllerName(Request $request)
+    public function getControllerName(Request $request): string
     {
         $path = $request->getPathInfo();
         if (strrpos($path, '/')) {
@@ -51,7 +51,7 @@ class ControllerFactory implements ControllerFactoryInterface
      * @param string $controllerName
      * @return ControllerInterface
      */
-    public function getController(Request $request, $controllerName)
+    public function getController(Request $request, string $controllerName): ?ControllerInterface
     {
         foreach ($this->namespaces as $namespace) {
             $controllerClass = $namespace . '\\' . $controllerName . 'Controller';

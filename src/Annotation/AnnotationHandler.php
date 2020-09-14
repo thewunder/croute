@@ -13,7 +13,7 @@ use Minime\Annotations\Interfaces\ReaderInterface;
 abstract class AnnotationHandler implements AnnotationHandlerInterface
 {
     /**
-     * @var \Minime\Annotations\Interfaces\ReaderInterface
+     * @var ReaderInterface
      */
     protected $reader;
 
@@ -28,7 +28,7 @@ abstract class AnnotationHandler implements AnnotationHandlerInterface
         }
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->annotation;
     }

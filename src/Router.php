@@ -72,11 +72,11 @@ class Router
      * @param string $path
      * @param string|array $methods A required HTTP method or an array of methods
      * @param string $controller Controller class minus the controller namespace and 'Controller'
-     * @param string $action Action name if omitted last part of path will be used to determine the action
+     * @param string|null $action Action name if omitted last part of path will be used to determine the action
      *
      * @return $this
      */
-    public function addRoute($path, $methods, $controller, $action = null)
+    public function addRoute(string $path, $methods, string $controller, string $action = null): self
     {
         if($action) {
             $controller = $controller . '::' . $action;
@@ -97,7 +97,7 @@ class Router
      *
      * @param array $routes
      */
-    public function addRoutes(array $routes)
+    public function addRoutes(array $routes): void
     {
         foreach ($routes as $route) {
             $count = count($route);
@@ -122,7 +122,7 @@ class Router
      * @param Route $route
      * @return $this
      */
-    public function addCustomRoute($name, Route $route)
+    public function addCustomRoute(string $name, Route $route): self
     {
         if(!$route->getDefault('_controller')) {
             throw new \InvalidArgumentException('You must specify a _controller');
@@ -137,7 +137,7 @@ class Router
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function addAnnotationHandler(AnnotationHandlerInterface $handler)
+    public function addAnnotationHandler(AnnotationHandlerInterface $handler): self
     {
         if (isset($this->annotationHandlers[$handler->getName()])) {
             throw new \InvalidArgumentException($handler->getName() . ' is already registered');
@@ -149,11 +149,11 @@ class Router
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @return $this
      * @throws \InvalidArgumentException
      */
-    public function removeAnnotationHandler($name)
+    public function removeAnnotationHandler(string $name): self
     {
         if (!isset($this->annotationHandlers[$name])) {
             throw new \InvalidArgumentException($name . ' is not registered');
@@ -168,7 +168,7 @@ class Router
     /**
      * @return ControllerFactoryInterface
      */
-    public function getControllerFactory()
+    public function getControllerFactory(): ControllerFactoryInterface
     {
         return $this->controllerFactory;
     }
@@ -177,7 +177,7 @@ class Router
      * @param Request $request
      * @return Response
      */
-    public function route(Request $request)
+    public function route(Request $request): Response
     {
         $requestEvent = new RequestEvent($request);
         $response = $this->dispatchEvent('router.request', $requestEvent);
@@ -240,7 +240,7 @@ class Router
      * @param Request $request
      * @return UrlMatcherInterface
      */
-    protected function getUrlMatcher(Request $request)
+    protected function getUrlMatcher(Request $request): UrlMatcherInterface
     {
         $context = new RequestContext();
         return new UrlMatcher($this->routes, $context->fromRequest($request));
@@ -251,7 +251,7 @@ class Router
      * @param Request $request
      * @return null|string
      */
-    protected function matchAction(ControllerInterface $controller, Request $request)
+    protected function matchAction(ControllerInterface $controller, Request $request): ?string
     {
         $path = $request->getPathInfo();
         $action = substr($path, strrpos($path, '/') + 1);
@@ -274,7 +274,7 @@ class Router
      * @throws \Exception
      * @return Response
      */
-    protected function invokeAction(ControllerInterface $controller, $actionMethod, Request $request, array $params = null)
+    protected function invokeAction(ControllerInterface $controller, string $actionMethod, Request $request): Response
     {
         $method = new \ReflectionMethod($controller, $actionMethod);
 
@@ -331,7 +331,7 @@ class Router
      * @param ErrorHandlerInterface $errorController
      * @return $this
      */
-    public function setErrorHandler(ErrorHandlerInterface $errorController)
+    public function setErrorHandler(ErrorHandlerInterface $errorController): self
     {
         $this->errorHandler = $errorController;
         return $this;
@@ -351,7 +351,7 @@ class Router
      *
      * @throws \Throwable
      */
-    private function dispatchEvent($eventName, RouterEvent $event)
+    private function dispatchEvent($eventName, RouterEvent $event): ?Response
     {
         try {
             $this->dispatcher->dispatch($event, $eventName);
@@ -387,7 +387,7 @@ class Router
      * @param int $code
      * @return Response
      */
-    protected function handleError($message, $code = 404)
+    protected function handleError($message, $code = 404): Response
     {
         if (!$this->errorHandler) {
             $response = new Response(Response::$statusTexts[$code], $code);
@@ -400,10 +400,10 @@ class Router
 
     /**
      * @param Request $request
-     * @param $response
+     * @param Response $response
      * @return Response
      */
-    protected function sendResponse(Request $request, Response $response)
+    protected function sendResponse(Request $request, Response $response): Response
     {
         $this->dispatcher->dispatch(new BeforeSendEvent($request, $response), 'router.before_response_sent');
         $response->prepare($request);

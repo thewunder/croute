@@ -21,9 +21,9 @@ class ControllerLoadedEvent extends RouterEvent
     }
 
     /**
-     * @return Controller
+     * @return ControllerInterface
      */
-    public function getController()
+    public function getController(): ControllerInterface
     {
         return $this->controller;
     }
@@ -31,7 +31,7 @@ class ControllerLoadedEvent extends RouterEvent
     /**
      * @param ControllerInterface $controller
      */
-    public function setController(ControllerInterface $controller)
+    public function setController(ControllerInterface $controller): void
     {
         $this->controller = $controller;
     }

@@ -26,9 +26,9 @@ class BeforeActionEvent extends RouterEvent
     }
 
     /**
-     * @return Controller
+     * @return ControllerInterface
      */
-    public function getController()
+    public function getController(): ControllerInterface
     {
         return $this->controller;
     }
@@ -36,7 +36,7 @@ class BeforeActionEvent extends RouterEvent
     /**
      * @return ReflectionMethod
      */
-    public function getMethod()
+    public function getMethod(): ReflectionMethod
     {
         return $this->method;
     }

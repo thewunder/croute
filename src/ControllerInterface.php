@@ -8,11 +8,11 @@ interface ControllerInterface
     /**
      * @return Request
      */
-    public function getRequest();
+    public function getRequest(): Request;
 
     /**
      * @param Request $request
      * @return void
      */
-    public function setRequest(Request $request);
+    public function setRequest(Request $request): void;
 }
