@@ -1,9 +1,10 @@
 <?php
-namespace Croute\Annotation;
+namespace Croute\Test\Annotation;
 
+use Croute\Annotation\HttpMethod;
 use Croute\Event\BeforeActionEvent;
 use Croute\Event\ControllerLoadedEvent;
-use Croute\Fixtures\Controller\HttpMethodTestController;
+use Croute\Test\Fixtures\Controller\HttpMethodTestController;
 use Minime\Annotations\Reader;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;

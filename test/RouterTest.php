@@ -1,8 +1,11 @@
 <?php
-namespace Croute;
+namespace Croute\Test;
 
+use Croute\ControllerFactory;
 use Croute\Event\BeforeActionEvent;
 use Croute\Event\RequestEvent;
+use Croute\Router;
+use Croute\Test\Fixtures\Controller\RouterTestController;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
@@ -101,7 +104,7 @@ class RouterTest extends TestCase
 
     public function testParams()
     {
-        $mockController = $this->getMockBuilder('Croute\\Fixtures\\Controller\\RouterTestController')
+        $mockController = $this->getMockBuilder('Croute\\Test\\Fixtures\\Controller\\RouterTestController')
             ->onlyMethods(array('paramsAction'))
             ->getMock();
 
@@ -175,7 +178,7 @@ class RouterTest extends TestCase
         $factory->expects($this->once())
             ->method('getController')
             ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new Fixtures\Controller\RouterTestController());
+            ->willReturn(new RouterTestController());
 
         $dispatcher = new EventDispatcher();
         $router = new Router($factory, $dispatcher);
@@ -205,7 +208,7 @@ class RouterTest extends TestCase
         $factory->expects($this->any())
             ->method('getController')
             ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new Fixtures\Controller\RouterTestController());
+            ->willReturn(new RouterTestController());
         $dispatcher = new EventDispatcher();
         $dispatcher->addListener('router.controller_loaded', function () {
             throw new \RuntimeException('Explode');
@@ -233,7 +236,7 @@ class RouterTest extends TestCase
 
     public function testAddRoute()
     {
-        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
         $router->addRoute('/custom/{input}/static', 'GET', 'RouterTest', 'echo');
         $response = $router->route(Request::create('/custom/xyz/static'));
         $this->assertEquals('xyz', $response->getContent());
@@ -241,7 +244,7 @@ class RouterTest extends TestCase
 
     public function testAddRoutes()
     {
-        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
         $router->addRoutes([['/custom/{input}/static', 'GET', 'RouterTest', 'echo'],
             ['/custom/{input}/asdf', 'GET', 'RouterTest', 'return']]);
         $response = $router->route(Request::create('/custom/xyz/static'));
@@ -252,7 +255,7 @@ class RouterTest extends TestCase
 
     public function testAddRouteNoAction()
     {
-        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
         $router->addRoute('/custom/{input}/return', 'GET', 'RouterTest');
         $response = $router->route(Request::create('/custom/xyz/return'));
         $this->assertEquals('Hello', $response->getContent());
@@ -260,7 +263,7 @@ class RouterTest extends TestCase
 
     public function testAddRouteInvalidMethod()
     {
-        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
         $router->addRoute('/custom/{input}', 'POST', 'RouterTest', 'echo');
         $response = $router->route(Request::create('/custom/xyz'));
         $this->assertEquals(405, $response->getStatusCode());
@@ -268,7 +271,7 @@ class RouterTest extends TestCase
 
     public function testAddCustomRoute()
     {
-        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
         $router->addCustomRoute('custom_route', new Route('/custom/{input}', ['_controller'=>'RouterTest::echo']));
         $response = $router->route(Request::create('/custom/xyz'));
         $this->assertEquals('xyz', $response->getContent());
@@ -277,7 +280,7 @@ class RouterTest extends TestCase
     public function testAddCustomRouteMissingController()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $router = Router::create(new EventDispatcher(), ['Croute\\Fixtures\\Controller']);
+        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
         $router->addCustomRoute('custom_route', new Route('/custom/{input}'));
         $router->route(Request::create('/custom/xyz'));
     }
@@ -299,7 +302,7 @@ class RouterTest extends TestCase
         $factory->expects($this->once())
             ->method('getController')
             ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new Fixtures\Controller\RouterTestController());
+            ->willReturn(new RouterTestController());
         $dispatcher = new EventDispatcher();
         $dispatcher->addListener('router.controller_loaded', function () {
             throw new \RuntimeException('Explode');
@@ -350,7 +353,7 @@ class RouterTest extends TestCase
         $factory->expects($this->once())
             ->method('getController')
             ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new Fixtures\Controller\RouterTestController());
+            ->willReturn(new RouterTestController());
         return new Router($factory, new EventDispatcher());
     }
 }

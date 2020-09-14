@@ -1,5 +1,5 @@
 <?php
-namespace Croute\Fixtures\Controller;
+namespace Croute\Test\Fixtures\Controller;
 
 use Croute\Controller;
 use Symfony\Component\HttpFoundation\Response;

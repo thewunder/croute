@@ -1,6 +1,8 @@
 <?php
-namespace Croute;
+namespace Croute\Test;
 
+use Croute\ControllerFactory;
+use Croute\Test\Fixtures\Controller;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,7 +15,7 @@ class ControllerFactoryTest extends TestCase
         $request = Request::create('/');
         $controllerName = $factory->getControllerName($request);
         $controller = $factory->getController($request, $controllerName);
-        $this->assertTrue($controller instanceof Fixtures\Controller\IndexController);
+        $this->assertInstanceOf(Controller\IndexController::class, $controller);
     }
 
     public function testNamedController()
@@ -23,7 +25,7 @@ class ControllerFactoryTest extends TestCase
         $request = Request::create('/named/');
         $controllerName = $factory->getControllerName($request);
         $controller = $factory->getController($request, $controllerName);
-        $this->assertTrue($controller instanceof Fixtures\Controller\NamedController);
+        $this->assertInstanceOf(Controller\NamedController::class, $controller);
     }
 
     public function testSanitization()
@@ -42,12 +44,12 @@ class ControllerFactoryTest extends TestCase
         $request = Request::create('/myNamespace/');
         $controllerName = $factory->getControllerName($request);
         $controller = $factory->getController($request, $controllerName);
-        $this->assertTrue($controller instanceof Fixtures\Controller\MyNamespace\IndexController);
+        $this->assertInstanceOf(Controller\MyNamespace\IndexController::class, $controller);
 
         $request = Request::create('/myNamespace/named/');
         $controllerName = $factory->getControllerName($request);
         $controller = $factory->getController($request, $controllerName);
-        $this->assertTrue($controller instanceof Fixtures\Controller\MyNamespace\NamedController);
+        $this->assertInstanceOf(Controller\MyNamespace\NamedController::class, $controller);
     }
 
     public function testControllerNotFound()
@@ -75,6 +77,6 @@ class ControllerFactoryTest extends TestCase
 
     protected function getFactory()
     {
-        return new ControllerFactory(['Croute\\Fixtures\\Controller'], []);
+        return new ControllerFactory(['Croute\\Test\\Fixtures\\Controller'], []);
     }
 }

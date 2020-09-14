@@ -1,5 +1,5 @@
 <?php
-namespace Croute\Fixtures\Controller\MyNamespace;
+namespace Croute\Test\Fixtures\Controller\MyNamespace;
 
 use Croute\Controller;
 

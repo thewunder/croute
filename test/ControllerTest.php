@@ -1,7 +1,8 @@
 <?php
-namespace Croute;
+namespace Croute\Test;
 
-use Croute\Fixtures\Controller\NamedController;
+use Croute\Controller;
+use Croute\Test\Fixtures\Controller\NamedController;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
@@ -76,9 +77,11 @@ class ControllerTest extends TestCase
 
     /**
      * @param Controller $controller
+     * @param string $method
      * @return \ReflectionMethod
+     * @throws \ReflectionException
      */
-    protected function getControllerMethod(Controller $controller, $method)
+    protected function getControllerMethod(Controller $controller, string $method)
     {
         $method = new \ReflectionMethod($controller, $method);
         $method->setAccessible(true);
