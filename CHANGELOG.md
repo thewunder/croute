@@ -1,3 +1,12 @@
+Version 1.4.1
+===========
+
+Fixes
+------------
+* Clean up deprecated method usage
+* Add missing type hints
+* Clean up test namespace usage
+
 Version 1.4
 ===========
 
