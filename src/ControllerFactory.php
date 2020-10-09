@@ -1,6 +1,7 @@
 <?php
 namespace Croute;
 
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class ControllerFactory implements ControllerFactoryInterface
@@ -11,14 +12,19 @@ class ControllerFactory implements ControllerFactoryInterface
     /** @var array */
     protected $dependencies;
 
+    /**  @var ContainerInterface|null */
+    private $container;
+
     /**
      * @param array $namespaces Array of namespaces containing to search for controllers
-     * @param array $dependencies Array of dependencies to pass as constructor arguments to controllers
+     * @param array|null $dependencies Array of dependencies to pass as constructor arguments to controllers
+     * @param ContainerInterface|null $container PSR-11 Container to use to instantiate controllers
      */
-    public function __construct(array $namespaces, array $dependencies)
+    public function __construct(array $namespaces, array $dependencies = [], ?ContainerInterface $container = null)
     {
         $this->namespaces = $namespaces;
         $this->dependencies = $dependencies;
+        $this->container = $container;
     }
 
     /**
@@ -109,12 +115,20 @@ class ControllerFactory implements ControllerFactoryInterface
     }
 
     /**
-     * @param $controllerClass
-     * @return object
+     * @param string $controllerClass
+     * @return ControllerInterface
      */
-    protected function createController($controllerClass)
+    protected function createController(string $controllerClass): ?ControllerInterface
     {
+        if ($this->container && $this->container->has($controllerClass)) {
+            return $this->container->get($controllerClass);
+        }
+
         $class = new \ReflectionClass($controllerClass);
-        return $class->newInstanceArgs($this->dependencies);
+        $controller = $class->newInstanceArgs($this->dependencies);
+        if ($controller instanceof ControllerInterface) {
+            return $controller;
+        }
+        return null;
     }
 }
