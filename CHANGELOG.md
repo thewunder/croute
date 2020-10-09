@@ -1,3 +1,10 @@
+Version 1.5.0
+===========
+
+New Feature
+------------
+* Instantiate controllers through a PSR-11 container if provided.
+
 Version 1.4.1
 ===========
 
