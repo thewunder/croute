@@ -9,6 +9,7 @@ use Croute\Event\BeforeSendEvent;
 use Croute\Event\ControllerLoadedEvent;
 use Croute\Event\RequestEvent;
 use Croute\Event\RouterEvent;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,12 +46,13 @@ class Router
      *
      * @param EventDispatcherInterface $dispatcher
      * @param array $controllerNamespaces Namespaces to search for controller classes
-     * @param array $controllerDependencies Dependencies passed to controller constructor
+     * @param array $controllerDependencies If the container is either not provided or does not have the class these will be passed to controller class constructors
+     * @param ContainerInterface|null $container PSR-11 Container to use to instantiate controllers, the full class name must resolve to an instance of the controller class
      * @return Router
      */
-    public static function create(EventDispatcherInterface $dispatcher, array $controllerNamespaces, array $controllerDependencies = [])
+    public static function create(EventDispatcherInterface $dispatcher, array $controllerNamespaces, array $controllerDependencies = [], ContainerInterface $container = null)
     {
-        return new static(new ControllerFactory($controllerNamespaces, $controllerDependencies), $dispatcher);
+        return new static(new ControllerFactory($controllerNamespaces, $controllerDependencies, $container), $dispatcher);
     }
 
     public function __construct(ControllerFactoryInterface $controllerFactory, EventDispatcherInterface $dispatcher)

@@ -3,7 +3,9 @@ namespace Croute\Test;
 
 use Croute\ControllerFactory;
 use Croute\Test\Fixtures\Controller;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class ControllerFactoryTest extends TestCase
@@ -26,6 +28,20 @@ class ControllerFactoryTest extends TestCase
         $controllerName = $factory->getControllerName($request);
         $controller = $factory->getController($request, $controllerName);
         $this->assertInstanceOf(Controller\NamedController::class, $controller);
+    }
+
+    public function testControllerWithContainer()
+    {
+        /** @var ContainerInterface|MockObject $container */
+        $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
+        $container->expects($this->once())->method('has')->with(Controller\NamedController::class)->willReturn(true);
+        $controller = new Controller\NamedController();
+        $container->expects($this->once())->method('get')->with(Controller\NamedController::class)->willReturn($controller);
+        $factory = $this->getFactory($container);
+        $request = Request::create('/named/');
+        $controllerName = $factory->getControllerName($request);
+        $fromFactory = $factory->getController($request, $controllerName);
+        $this->assertEquals($controller, $fromFactory);
     }
 
     public function testSanitization()
@@ -75,8 +91,8 @@ class ControllerFactoryTest extends TestCase
         $this->assertEquals($namespaces, $factory->getNamespaces());
     }
 
-    protected function getFactory()
+    protected function getFactory(?ContainerInterface $container = null)
     {
-        return new ControllerFactory(['Croute\\Test\\Fixtures\\Controller'], []);
+        return new ControllerFactory(['Croute\\Test\\Fixtures\\Controller'], [], $container);
     }
 }

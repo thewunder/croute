@@ -6,7 +6,9 @@ use Croute\Event\BeforeActionEvent;
 use Croute\Event\RequestEvent;
 use Croute\Router;
 use Croute\Test\Fixtures\Controller\RouterTestController;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +19,14 @@ class RouterTest extends TestCase
     public function testCreate()
     {
         $router = Router::create(new EventDispatcher(), ['Croute']);
+        $this->assertTrue($router->getControllerFactory() instanceof ControllerFactory);
+    }
+
+    public function testCreateWithContainer()
+    {
+        /** @var ContainerInterface|MockObject $container */
+        $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
+        $router = Router::create(new EventDispatcher(), ['Croute'], [], $container);
         $this->assertTrue($router->getControllerFactory() instanceof ControllerFactory);
     }
 
