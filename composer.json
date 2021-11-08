@@ -21,7 +21,7 @@
         "php": ">=7.2",
         "symfony/http-foundation": "~5.0",
         "symfony/event-dispatcher": "~5.0",
-        "minime/annotations": "~3.0",
+        "minime/annotations": "~3.0|dev-master",
         "symfony/routing": "~5.0"
     },
     "require-dev": {
