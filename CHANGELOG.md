@@ -1,3 +1,11 @@
+Version 1.5.1
+===========
+
+New Feature
+------------
+* Allow annotations dev-master for a smoother transition to php 8 attributes
+
+
 Version 1.5.0
 ===========
 
