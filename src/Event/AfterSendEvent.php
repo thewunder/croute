@@ -6,13 +6,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Used after the response is sent.
- * @package Croute
  */
-class AfterSendEvent extends RouterEvent
+final class AfterSendEvent extends RouterEvent
 {
     public function __construct(Request $request, Response $response)
     {
-        $this->request = $request;
+        parent::__construct($request);
         $this->response = $response;
     }
 

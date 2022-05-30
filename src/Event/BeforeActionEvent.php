@@ -8,34 +8,19 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Used prior to invoking the action
- * @package Croute
  */
-class BeforeActionEvent extends RouterEvent
+final class BeforeActionEvent extends RouterEvent
 {
-    /** @var ControllerInterface */
-    protected $controller;
-
-    /** @var ReflectionMethod */
-    protected $method;
-
-    public function __construct(Request $request, ControllerInterface $controller, ReflectionMethod $method)
+    public function __construct(Request $request, private ControllerInterface $controller, private ReflectionMethod $method)
     {
-        $this->request = $request;
-        $this->controller = $controller;
-        $this->method = $method;
+        parent::__construct($request);
     }
 
-    /**
-     * @return ControllerInterface
-     */
     public function getController(): ControllerInterface
     {
         return $this->controller;
     }
 
-    /**
-     * @return ReflectionMethod
-     */
     public function getMethod(): ReflectionMethod
     {
         return $this->method;
