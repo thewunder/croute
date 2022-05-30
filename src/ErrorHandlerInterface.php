@@ -7,10 +7,10 @@ interface ErrorHandlerInterface
 {
     /**
      * @param int $code
-     * @param null|string $message
+     * @param string|null $message
      * @return Response
      */
-    public function displayErrorPage(int $code, $message = null): Response;
+    public function displayErrorPage(int $code, string $message = null): Response;
 
     /**
      * @param \Exception $e

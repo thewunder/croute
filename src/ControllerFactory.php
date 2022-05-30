@@ -6,18 +6,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ControllerFactory implements ControllerFactoryInterface
 {
-    /** @var array */
-    protected $namespaces;
-
-    /** @var array */
-    protected $dependencies;
-
-    /**  @var ContainerInterface|null */
-    private $container;
+    protected array $namespaces;
+    protected array $dependencies;
+    private ?ContainerInterface $container;
 
     /**
      * @param array $namespaces Array of namespaces containing to search for controllers
-     * @param array|null $dependencies Array of dependencies to pass as constructor arguments to controllers
+     * @param array $dependencies Array of dependencies to pass as constructor arguments to controllers
      * @param ContainerInterface|null $container PSR-11 Container to use to instantiate controllers
      */
     public function __construct(array $namespaces, array $dependencies = [], ?ContainerInterface $container = null)
@@ -38,7 +33,7 @@ class ControllerFactory implements ControllerFactoryInterface
             $path = $request->getBaseUrl() . $path;
             $controllerName = substr($path, 1, strrpos($path, '/') - 1); //chop off leading /
             $controllerName = preg_replace(['#[^a-z0-9/]#i','#/#'], ['', '\\'], $controllerName); //sanitize and flip / to \
-            $controllerName = preg_replace_callback(
+            return preg_replace_callback(
                 ['#^[a-z]#',
                 '#\\\\[a-z]#'], //normalize capitalization
                 function ($matches) {
@@ -46,7 +41,6 @@ class ControllerFactory implements ControllerFactoryInterface
                 },
                 $controllerName
             );
-            return $controllerName;
         } else {
             return 'Index';
         }
@@ -55,7 +49,7 @@ class ControllerFactory implements ControllerFactoryInterface
     /**
      * @param Request $request
      * @param string $controllerName
-     * @return ControllerInterface
+     * @return ControllerInterface|null
      */
     public function getController(Request $request, string $controllerName): ?ControllerInterface
     {
@@ -116,7 +110,7 @@ class ControllerFactory implements ControllerFactoryInterface
 
     /**
      * @param string $controllerClass
-     * @return ControllerInterface
+     * @return ControllerInterface|null
      */
     protected function createController(string $controllerClass): ?ControllerInterface
     {

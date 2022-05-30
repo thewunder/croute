@@ -16,7 +16,7 @@ interface ControllerFactoryInterface
     /**
      * @param Request $request
      * @param string $controllerName The name from getControllerName
-     * @return ControllerInterface
+     * @return ControllerInterface|null
      */
     public function getController(Request $request, string $controllerName): ?ControllerInterface;
 }

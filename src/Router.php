@@ -26,20 +26,12 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class Router
 {
-    /** @var ControllerFactoryInterface */
-    protected $controllerFactory;
-
-    /** @var EventDispatcherInterface */
+    protected ControllerFactoryInterface $controllerFactory;
     protected EventDispatcherInterface $dispatcher;
-
-    /** @var ErrorHandlerInterface */
-    protected $errorHandler;
-
+    protected ?ErrorHandlerInterface $errorHandler = null;
+    protected RouteCollection $routes;
     /** @var AnnotationHandlerInterface[]  */
-    protected $annotationHandlers = [];
-
-    /** @var RouteCollection */
-    protected $routes;
+    protected array $annotationHandlers = [];
 
     /**
      * Returns an instance using the default controller factory implementation
@@ -50,7 +42,7 @@ class Router
      * @param ContainerInterface|null $container PSR-11 Container to use to instantiate controllers, the full class name must resolve to an instance of the controller class
      * @return Router
      */
-    public static function create(EventDispatcherInterface $dispatcher, array $controllerNamespaces, array $controllerDependencies = [], ContainerInterface $container = null)
+    public static function create(EventDispatcherInterface $dispatcher, array $controllerNamespaces, array $controllerDependencies = [], ContainerInterface $container = null): Router
     {
         return new static(new ControllerFactory($controllerNamespaces, $controllerDependencies, $container), $dispatcher);
     }
@@ -72,13 +64,13 @@ class Router
      *
      *
      * @param string $path
-     * @param string|array $methods A required HTTP method or an array of methods
+     * @param array|string $methods A required HTTP method or an array of methods
      * @param string $controller Controller class minus the controller namespace and 'Controller'
      * @param string|null $action Action name if omitted last part of path will be used to determine the action
      *
      * @return $this
      */
-    public function addRoute(string $path, $methods, string $controller, string $action = null): self
+    public function addRoute(string $path, array|string $methods, string $controller, string $action = null): self
     {
         if($action) {
             $controller = $controller . '::' . $action;
@@ -187,14 +179,13 @@ class Router
             return $this->sendResponse($request, $response);
         }
 
-        $controllerName = null;
         $actionMethod = null;
 
         $matcher = $this->getUrlMatcher($request);
         try {
             $match = $matcher->match($request->getPathInfo());
             $controllerName = $match['_controller'];
-            if(strpos($controllerName, '::') !== false) {
+            if(str_contains($controllerName, '::')) {
                 list($controllerName, $actionMethod) = explode('::', $controllerName);
                 if(strrpos($actionMethod, 'Action') === false) {
                     $actionMethod .= 'Action';
@@ -273,7 +264,6 @@ class Router
      * @param ControllerInterface $controller
      * @param string $actionMethod
      * @param Request $request
-     * @throws \Exception
      * @return Response
      */
     protected function invokeAction(ControllerInterface $controller, string $actionMethod, Request $request): Response
@@ -349,7 +339,7 @@ class Router
      *
      * @param $eventName
      * @param RouterEvent $event
-     * @return Response
+     * @return Response|null
      *
      * @throws \Throwable
      */
@@ -389,7 +379,7 @@ class Router
      * @param int $code
      * @return Response
      */
-    protected function handleError($message, $code = 404): Response
+    protected function handleError($message, int $code = 404): Response
     {
         if (!$this->errorHandler) {
             $response = new Response(Response::$statusTexts[$code], $code);

@@ -13,12 +13,10 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  * Must end in "Action"
  * Must be public
  * May have one or more parameters that will be populated automatically from the request based on the parameter name
- *
  */
 abstract class Controller implements ControllerInterface
 {
-    /** @var Request */
-    protected $request;
+    protected Request $request;
 
     /**
      * @return Request
@@ -47,11 +45,11 @@ abstract class Controller implements ControllerInterface
     }
 
     /**
-     * @param string|\SplFileInfo $file
+     * @param \SplFileInfo|string $file
      * @param string $disposition attachment or inline
      * @return BinaryFileResponse
      */
-    protected function fileDownload($file, string $disposition = ResponseHeaderBag::DISPOSITION_ATTACHMENT): BinaryFileResponse
+    protected function fileDownload(\SplFileInfo|string $file, string $disposition = ResponseHeaderBag::DISPOSITION_ATTACHMENT): BinaryFileResponse
     {
         $response = new BinaryFileResponse($file);
         $response->setContentDisposition($disposition);
@@ -63,7 +61,7 @@ abstract class Controller implements ControllerInterface
      * @param int $status
      * @return JsonResponse
      */
-    protected function json($data, int $status = 200): JsonResponse
+    protected function json(mixed $data, int $status = 200): JsonResponse
     {
         return new JsonResponse($data, $status);
     }
