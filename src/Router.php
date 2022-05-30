@@ -10,7 +10,7 @@ use Croute\Event\ControllerLoadedEvent;
 use Croute\Event\RequestEvent;
 use Croute\Event\RouterEvent;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
@@ -30,7 +30,7 @@ class Router
     protected $controllerFactory;
 
     /** @var EventDispatcherInterface */
-    protected $dispatcher;
+    protected EventDispatcherInterface $dispatcher;
 
     /** @var ErrorHandlerInterface */
     protected $errorHandler;
