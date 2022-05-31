@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
  * multiple values are allowed.
  */
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class HttpMethod implements RoutingAttribute
+final class HttpMethod implements RoutingAttribute
 {
     private array $methods;
 
