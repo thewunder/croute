@@ -1,3 +1,18 @@
+Version 2.0
+===========
+
+Breaking Changes
+------------
+* Require PHP 8
+* Replace Annotations with php 8 attributes 
+
+New Features
+------------
+* Allow Symfony 6 components
+* Upgrade to PhpUnit 9.x
+
+Other
+
 Version 1.5.1
 ===========
 
