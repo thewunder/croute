@@ -12,17 +12,17 @@ Croute is great because:
 
 * You don't need to maintain a routing table
 * Promotes consistent code organization
-* Allows for customization through annotations and events
+* Allows for customization through attributes and events
 
 Install via Composer
 --------------------
 Via the command line:
 
-    composer.phar require thewunder/croute ~1.0
+    composer.phar require thewunder/croute ^2.0
 
 Or add the following to the require section your composer.json:
 
-    "thewunder/croute": "~1.0"
+    "thewunder/croute": "^2.0"
 
 Basics
 ------
@@ -73,37 +73,41 @@ It supports nested namespaces so that:
 
 * http://yourdomain/level1/level2/save -> Your\Controller\Namespace\Level1\Level2\IndexController::saveAction()
 
-Annotations
+Attributes
 -----------
 
-Croute optionally supports controller and action annotations through the excellent [minime/annotations](https://github.com/marcioAlmada/annotations)
-library.  To add an annotation handler simply:
+Croute optionally supports controller and action attributes. To create a custom attribute, implement
+the RoutingAttribute interface.
 
 ```php
-$router->addAnnotationHandler($myhandler);
+#[\Attribute(\Attribute::TARGET_CLASS|\Attribute::TARGET_METHOD)]
+class MyAttribute implements RoutingAttribute
+{
+    public function handleRequest(Request $request): ?Response
+    {
+        // return a response to bypass the normal action method
+    }
+}
+
 ```
 
-Two annotations are included (but must be added) out of the box @httpMethod and @secure.
+Two attributes are included out of the box, HttpMethod and Secure.
 
-### @httpMethod
+### HttpMethod
 
 Restricts the allowed http methods.  Returns a 400 response if the method does not match.
 
 ```php
-    /**
-     * @httpMethod POST
-     */
+    #[HttpMethod('POST')]
     public function saveAction()
 ```
 
-### @secure
+### Secure
 
 Requires a secure connection.  If the connection is not https send a 301 redirect to the same url with the https protocol.
 
 ```php
-/**
- * @secure
- */
+#[Secure]
 class IndexController extends Controller
 {
 ```
