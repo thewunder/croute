@@ -15,12 +15,12 @@
         "psr-4": { "Croute\\" : "src/" }
     },
     "autoload-dev": {
-        "psr-4": { "\\Croute\\Test\\": "test/"}
+        "psr-4": { "Croute\\Test\\": "test/"}
     },
     "require": {
         "php": ">=8.0",
-        "symfony/http-foundation": "~5.0",
-        "symfony/routing": "~5.0",
+        "symfony/http-foundation": "^5.0||^6.0",
+        "symfony/routing": "^5.0||^6.0",
         "psr/event-dispatcher": "^1.0"
     },
     "require-dev": {
