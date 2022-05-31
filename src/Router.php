@@ -1,7 +1,7 @@
 <?php
 namespace Croute;
 
-use Croute\Annotation\AnnotationHandlerInterface;
+use Croute\Attributes\RoutingAttribute;
 use Croute\Event\AfterActionEvent;
 use Croute\Event\AfterSendEvent;
 use Croute\Event\BeforeActionEvent;
@@ -30,8 +30,6 @@ class Router
     protected EventDispatcherInterface $dispatcher;
     protected ?ErrorHandlerInterface $errorHandler = null;
     protected RouteCollection $routes;
-    /** @var AnnotationHandlerInterface[]  */
-    protected array $annotationHandlers = [];
 
     /**
      * Returns an instance using the default controller factory implementation
@@ -127,39 +125,6 @@ class Router
     }
 
     /**
-     * @param AnnotationHandlerInterface $handler
-     * @return $this
-     * @throws \InvalidArgumentException
-     */
-    public function addAnnotationHandler(AnnotationHandlerInterface $handler): self
-    {
-        if (isset($this->annotationHandlers[$handler->getName()])) {
-            throw new \InvalidArgumentException($handler->getName() . ' is already registered');
-        }
-
-        $this->annotationHandlers[$handler->getName()] = $handler;
-        $this->dispatcher->addSubscriber($handler);
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @return $this
-     * @throws \InvalidArgumentException
-     */
-    public function removeAnnotationHandler(string $name): self
-    {
-        if (!isset($this->annotationHandlers[$name])) {
-            throw new \InvalidArgumentException($name . ' is not registered');
-        }
-
-        $handler = $this->annotationHandlers[$name];
-        $this->dispatcher->removeSubscriber($handler);
-        unset($this->annotationHandlers[$name]);
-        return $this;
-    }
-
-    /**
      * @return ControllerFactoryInterface
      */
     public function getControllerFactory(): ControllerFactoryInterface
@@ -207,6 +172,11 @@ class Router
             $response = $this->handleError('Unable to load '.$request->attributes->get('controller').'Controller.', 404);
         } else {
             $controller->setRequest($request);
+            $response = $this->runAttributes(new \ReflectionClass($controller), $request);
+            if ($response) {
+                return $this->sendResponse($request, $response);
+            }
+
             $controllerEvent = new ControllerLoadedEvent($request, $controller);
             $response = $this->dispatchEvent('router.controller_loaded', $controllerEvent);
             if ($response) {
@@ -273,6 +243,11 @@ class Router
         if (!$method->isPublic()) {
             $controllerName = $request->attributes->get('controller');
             return $this->handleError("Method '{$actionMethod}' on {$controllerName}Controller is not public", 500);
+        }
+
+        $response = $this->runAttributes($method, $request);
+        if ($response) {
+            return $response;
         }
 
         $beforeEvent = new BeforeActionEvent($request, $controller, $method);
@@ -371,6 +346,20 @@ class Router
             return $event->getResponse();
         }
 
+        return null;
+    }
+
+    protected function runAttributes(\ReflectionClass|\ReflectionMethod $reflection, Request $request): ?Response
+    {
+        $attributes = $reflection->getAttributes(RoutingAttribute::class, \ReflectionAttribute::IS_INSTANCEOF);
+        foreach ($attributes as $attribute) {
+            /** @var RoutingAttribute $routingAttribute */
+            $routingAttribute = $attribute->newInstance();
+            $response = $routingAttribute->handleRequest($request);
+            if ($response) {
+                return $response;
+            }
+        }
         return null;
     }
 

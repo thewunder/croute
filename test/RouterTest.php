@@ -2,9 +2,11 @@
 namespace Croute\Test;
 
 use Croute\ControllerFactory;
+use Croute\ErrorHandlerInterface;
 use Croute\Event\BeforeActionEvent;
 use Croute\Event\RequestEvent;
 use Croute\Router;
+use Croute\Test\Fixtures\Controller\AttributeTestController;
 use Croute\Test\Fixtures\Controller\RouterTestController;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -16,6 +18,22 @@ use Symfony\Component\Routing\Route;
 
 class RouterTest extends TestCase
 {
+    private ControllerFactory|MockObject $factory;
+    private Router $router;
+
+    public function setUp(): void
+    {
+        $this->factory = $this->getMockBuilder('Croute\\ControllerFactory')
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getController'])
+            ->getMock();
+
+        $this->factory->method('getController')
+            ->willReturn(new RouterTestController());
+
+        $this->router = new Router($this->factory, new EventDispatcher());
+    }
+
     public function testCreate()
     {
         $router = Router::create(new EventDispatcher(), ['Croute']);
@@ -32,111 +50,68 @@ class RouterTest extends TestCase
 
     public function testRoute()
     {
-        $response = $this->getRouter()->route(Request::create('/'));
+        $response = $this->router->route(Request::create('/'));
         $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function testControllerNotFound()
     {
-        $factory = $this->getMockBuilder('Croute\\ControllerFactory')
-            ->disableOriginalConstructor()
-            ->onlyMethods(array('getController'))
-            ->getMock();
-        $factory->expects($this->once())
-            ->method('getController')
+        $this->factory->method('getController')
             ->willReturn(null);
 
-        $router = new Router($factory, new EventDispatcher());
-
-        $response = $router->route(Request::create('/asdf'));
+        $response = $this->router->route(Request::create('/asdf'));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testActionNotFound()
     {
-        $response = $this->getRouter()->route(Request::create('/asdf'));
+        $response = $this->router->route(Request::create('/asdf'));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testAnnotationHandler()
+    public function testActionAttribute()
     {
-        $mock = $this->getMockBuilder('Croute\\Annotation\\HttpMethod')
-            ->disableOriginalConstructor()
-            ->onlyMethods(array('handleControllerAnnotations', 'handleActionAnnotations'))
-            ->getMock();
-
-        $mock->expects($this->once())->method('handleControllerAnnotations')
-            ->with($this->isInstanceOf('Croute\\Event\\ControllerLoadedEvent'));
-
-        $mock->expects($this->once())->method('handleActionAnnotations')
-            ->with($this->isInstanceOf('Croute\\Event\\BeforeActionEvent'));
-
-        $router = $this->getRouter();
-        $router->addAnnotationHandler($mock);
-
-        try {
-            $router->addAnnotationHandler($mock);
-            $this->fail('Should have thrown illegal argument exception');
-        } catch (\InvalidArgumentException $e) {
-            //expected
-        }
-
-        $router->route(Request::create('/'));
+        $request = Request::create('/secure');
+        $response = $this->router->route($request);
+        $this->assertEquals(Response::HTTP_MOVED_PERMANENTLY, $response->getStatusCode());
     }
 
-    public function testRemoveAnnotationHandler()
+    public function testControllerAttribute()
     {
-        $mock = $this->getMockBuilder('Croute\\Annotation\\HttpMethod')
+        $this->factory = $this->getMockBuilder('Croute\\ControllerFactory')
             ->disableOriginalConstructor()
-            ->onlyMethods(array('getName'))
+            ->onlyMethods(['getController'])
             ->getMock();
 
-        $mock->expects($this->exactly(2))->method('getName')->willReturn('httpMethod');
+        $this->factory->method('getController')
+            ->willReturn(new AttributeTestController());
 
-        $router = Router::create(new EventDispatcher(), []);
-        $router->addAnnotationHandler($mock);
-        $router->removeAnnotationHandler('httpMethod');
-    }
+        $this->router = new Router($this->factory, new EventDispatcher());
 
-    public function testRemoveMissingAnnotationHandler()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $router = Router::create(new EventDispatcher(), []);
-        $router->removeAnnotationHandler('httpMethod');
+        $response = $this->router->route(Request::create('/attributeTest/insecure'));
+
+        $this->assertEquals(Response::HTTP_MOVED_PERMANENTLY, $response->getStatusCode());
     }
 
     public function testReturn()
     {
-        $response = $this->getRouter()->route(Request::create('/return'));
+        $response = $this->router->route(Request::create('/return'));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Hello', $response->getContent());
     }
 
     public function testParams()
     {
-        $mockController = $this->getMockBuilder('Croute\\Test\\Fixtures\\Controller\\RouterTestController')
-            ->onlyMethods(array('paramsAction'))
-            ->getMock();
-
-        $mockController->expects($this->once())->method('paramsAction')
-            ->with($this->equalTo('Hello'), $this->equalTo('defaultValue'));
-
-        $factory = $this->getMockBuilder('Croute\\ControllerFactory')
-            ->disableOriginalConstructor()
-            ->onlyMethods(array('getController'))
-            ->getMock();
-        $factory->expects($this->once())
-            ->method('getController')
-            ->willReturn($mockController);
-
-        $router = new Router($factory, new EventDispatcher());
-
-        $response = $router->route(Request::create('/params?required=Hello'));
+        $response = $this->router->route(Request::create('/params?required=Hello'));
         $this->assertEquals(200, $response->getStatusCode());
+        $data = json_decode($response->getContent());
+        $this->assertEquals('Hello', $data->required);
+        $this->assertEquals('defaultValue', $data->optional);
     }
 
     public function testEvents()
     {
+        /** @var EventDispatcher|MockObject $mockDispatcher */
         $mockDispatcher = $this->getMockBuilder('Symfony\\Component\\EventDispatcher\\EventDispatcher')
             ->onlyMethods(array('dispatch'))
             ->getMock();
@@ -146,29 +121,17 @@ class RouterTest extends TestCase
         // 12 = 1 request, 2 controller loaded, 3 before action, 3 after after, 1 before sent, 3 response sent
         $mockDispatcher->expects($this->exactly(13))->method('dispatch');
 
-        $factory = $this->getMockBuilder('Croute\\ControllerFactory')
-            ->disableOriginalConstructor()
-            ->onlyMethods(array('getController'))
-            ->getMock();
-        $factory->expects($this->any())
-            ->method('getController')
-            ->willReturn(new Fixtures\Controller\RouterTestController());
-
-        $router = new Router($factory, $mockDispatcher);
+        $router = new Router($this->factory, $mockDispatcher);
         $router->route($request);
     }
 
     public function testResponseFromRequestListener()
     {
-        $factory = $this->getMockBuilder('Croute\\ControllerFactory')
-            ->disableOriginalConstructor()
-            ->onlyMethods(array('getController'))
-            ->getMock();
-        $factory->expects($this->never())
+        $this->factory->expects($this->never())
             ->method('getController');
 
         $dispatcher = new EventDispatcher();
-        $router = new Router($factory, $dispatcher);
+        $router = new Router($this->factory, $dispatcher);
 
         $dispatcher->addListener('router.request', function (RequestEvent $event) {
             $event->setResponse(new Response('I\'m a teapot', 418));
@@ -181,17 +144,8 @@ class RouterTest extends TestCase
 
     public function testResponseFromBeforeActionListener()
     {
-        $factory = $this->getMockBuilder('Croute\\ControllerFactory')
-            ->disableOriginalConstructor()
-            ->onlyMethods(array('getController'))
-            ->getMock();
-        $factory->expects($this->once())
-            ->method('getController')
-            ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new RouterTestController());
-
         $dispatcher = new EventDispatcher();
-        $router = new Router($factory, $dispatcher);
+        $router = new Router($this->factory, $dispatcher);
 
         $dispatcher->addListener('router.before_action', function (BeforeActionEvent $event) {
             $event->setResponse(new Response('I\'m a teapot', 418));
@@ -205,31 +159,26 @@ class RouterTest extends TestCase
     public function testException()
     {
         $this->expectException(\RuntimeException::class);
-        $this->getRouter()->route(Request::create('/exception'));
+        $this->router->route(Request::create('/exception'));
     }
 
     public function testExceptionInListener()
     {
         $this->expectException(\RuntimeException::class);
-        $factory = $this->getMockBuilder('Croute\\ControllerFactory')
-            ->disableOriginalConstructor()
-            ->onlyMethods(array('getController'))
-            ->getMock();
-        $factory->expects($this->any())
-            ->method('getController')
-            ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
+        $this->factory->method('getController')
             ->willReturn(new RouterTestController());
         $dispatcher = new EventDispatcher();
         $dispatcher->addListener('router.controller_loaded', function () {
             throw new \RuntimeException('Explode');
         });
-        $router = new Router($factory, $dispatcher);
+        $router = new Router($this->factory, $dispatcher);
 
         $router->route(Request::create('/'));
     }
 
     public function testErrorHandlerException()
     {
+        /** @var ErrorHandlerInterface|MockObject $mockErrorHandler */
         $mockErrorHandler = $this->getMockBuilder('Croute\\ErrorHandlerInterface')
             ->onlyMethods(array('displayErrorPage', 'handleException'))
             ->getMock();
@@ -238,9 +187,8 @@ class RouterTest extends TestCase
             ->with($this->isInstanceOf('RuntimeException'))
             ->willReturn(new Response('', 500));
 
-        $router = $this->getRouter();
-        $router->setErrorHandler($mockErrorHandler);
-        $response = $router->route(Request::create('/exception'));
+        $this->router->setErrorHandler($mockErrorHandler);
+        $response = $this->router->route(Request::create('/exception'));
         $this->assertEquals(500, $response->getStatusCode());
     }
 
@@ -297,6 +245,7 @@ class RouterTest extends TestCase
 
     public function testErrorHandlerExceptionInListener()
     {
+        /** @var ErrorHandlerInterface|MockObject $mockErrorHandler */
         $mockErrorHandler = $this->getMockBuilder('Croute\\ErrorHandlerInterface')
             ->onlyMethods(array('displayErrorPage', 'handleException'))
             ->getMock();
@@ -305,19 +254,12 @@ class RouterTest extends TestCase
             ->with($this->isInstanceOf('RuntimeException'))
             ->willReturn(new Response('', 500));
 
-        $factory = $this->getMockBuilder('Croute\\ControllerFactory')
-            ->disableOriginalConstructor()
-            ->onlyMethods(array('getController'))
-            ->getMock();
-        $factory->expects($this->once())
-            ->method('getController')
-            ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new RouterTestController());
         $dispatcher = new EventDispatcher();
         $dispatcher->addListener('router.controller_loaded', function () {
             throw new \RuntimeException('Explode');
         });
-        $router = new Router($factory, $dispatcher);
+
+        $router = new Router($this->factory, $dispatcher);
 
         $router->setErrorHandler($mockErrorHandler);
         $response = $router->route(Request::create('/'));
@@ -326,6 +268,7 @@ class RouterTest extends TestCase
 
     public function testErrorHandlerErrorPage()
     {
+        /** @var ErrorHandlerInterface|MockObject $mockErrorHandler */
         $mockErrorHandler = $this->getMockBuilder('Croute\\ErrorHandlerInterface')
             ->onlyMethods(array('displayErrorPage', 'handleException'))
             ->getMock();
@@ -333,37 +276,20 @@ class RouterTest extends TestCase
         $mockErrorHandler->expects($this->once())->method('displayErrorPage')
             ->willReturn(new Response('', 404));
 
-        $router = $this->getRouter();
-        $router->setErrorHandler($mockErrorHandler);
-        $response = $router->route(Request::create('/asdf'));
+        $this->router->setErrorHandler($mockErrorHandler);
+        $response = $this->router->route(Request::create('/asdf'));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function testMissingParams()
     {
-        $response = $this->getRouter()->route(Request::create('/params'));
+        $response = $this->router->route(Request::create('/params'));
         $this->assertEquals(400, $response->getStatusCode());
     }
 
     public function testInaccessibleAction()
     {
-        $response = $this->getRouter()->route(Request::create('/protected'));
+        $response = $this->router->route(Request::create('/protected'));
         $this->assertEquals(500, $response->getStatusCode());
-    }
-
-    /**
-     * @return Router
-     */
-    protected function getRouter()
-    {
-        $factory = $this->getMockBuilder('Croute\\ControllerFactory')
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getController'])
-            ->getMock();
-        $factory->expects($this->once())
-            ->method('getController')
-            ->with($this->isInstanceOf('Symfony\\Component\\HttpFoundation\\Request'))
-            ->willReturn(new RouterTestController());
-        return new Router($factory, new EventDispatcher());
     }
 }
