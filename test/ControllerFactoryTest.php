@@ -91,7 +91,7 @@ class ControllerFactoryTest extends TestCase
         $this->assertEquals($namespaces, $factory->getNamespaces());
     }
 
-    protected function getFactory(?ContainerInterface $container = null)
+    protected function getFactory(?ContainerInterface $container = null): ControllerFactory
     {
         return new ControllerFactory(['Croute\\Test\\Fixtures\\Controller'], [], $container);
     }

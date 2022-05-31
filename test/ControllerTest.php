@@ -65,10 +65,7 @@ class ControllerTest extends TestCase
         $this->assertEquals('attachment; filename=unitText.txt', $response->headers->get('Content-Disposition'));
     }
 
-    /**
-     * @return NamedController
-     */
-    protected function getController()
+    protected function getController(): NamedController
     {
         $controller = new NamedController();
         $controller->setRequest(Request::create('/'));
@@ -78,10 +75,8 @@ class ControllerTest extends TestCase
     /**
      * @param Controller $controller
      * @param string $method
-     * @return \ReflectionMethod
-     * @throws \ReflectionException
      */
-    protected function getControllerMethod(Controller $controller, string $method)
+    protected function getControllerMethod(Controller $controller, string $method): \ReflectionMethod
     {
         $method = new \ReflectionMethod($controller, $method);
         $method->setAccessible(true);
