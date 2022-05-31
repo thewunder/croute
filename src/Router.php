@@ -151,7 +151,7 @@ class Router
             $match = $matcher->match($request->getPathInfo());
             $controllerName = $match['_controller'];
             if(str_contains($controllerName, '::')) {
-                list($controllerName, $actionMethod) = explode('::', $controllerName);
+                [$controllerName, $actionMethod] = explode('::', $controllerName);
                 if(strrpos($actionMethod, 'Action') === false) {
                     $actionMethod .= 'Action';
                 }
@@ -159,9 +159,9 @@ class Router
             foreach ($match as $key => $value) {
                 $request->attributes->set($key, $value);
             }
-        } catch (ResourceNotFoundException $notFoundException) {
+        } catch (ResourceNotFoundException) {
             $controllerName = $this->controllerFactory->getControllerName($request);
-        } catch (MethodNotAllowedException $notAllowedException) {
+        } catch (MethodNotAllowedException) {
             return $this->sendResponse($request, new Response('Invalid http method', Response::HTTP_METHOD_NOT_ALLOWED));
         }
 
