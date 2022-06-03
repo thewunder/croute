@@ -4,6 +4,7 @@ Version 2.0
 Breaking Changes
 ------------
 * Require PHP 8
+* Require a PSR-11 compatible DI container
 * Replace Annotations with php 8 attributes 
 
 New Features

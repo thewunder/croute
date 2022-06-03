@@ -2,6 +2,7 @@
 namespace Croute;
 
 use Croute\Attributes\RoutingAttribute;
+use Croute\Attributes\RoutingAttributeInterface;
 use Croute\Event\AfterActionEvent;
 use Croute\Event\AfterSendEvent;
 use Croute\Event\BeforeActionEvent;
@@ -35,14 +36,14 @@ class Router
      * Returns an instance using the default controller factory implementation
      *
      * @param EventDispatcherInterface $dispatcher
-     * @param array $controllerNamespaces Namespaces to search for controller classes
-     * @param array $controllerDependencies If the container is either not provided or does not have the class these will be passed to controller class constructors
-     * @param ContainerInterface|null $container PSR-11 Container to use to instantiate controllers, the full class name must resolve to an instance of the controller class
+     * @param string[] $controllerNamespaces Namespaces to search for controller classes
+     * @param ContainerInterface $container PSR-11 Container to use to instantiate controllers, the full class name must resolve to an instance of the controller class
+     * @param array $controllerDependencies If the container does not have the class these will be passed to controller class constructors
      * @return Router
      */
-    public static function create(EventDispatcherInterface $dispatcher, array $controllerNamespaces, array $controllerDependencies = [], ContainerInterface $container = null): Router
+    public static function create(EventDispatcherInterface $dispatcher, array $controllerNamespaces, ContainerInterface $container, array $controllerDependencies = []): Router
     {
-        return new static(new ControllerFactory($controllerNamespaces, $controllerDependencies, $container), $dispatcher);
+        return new static(new ControllerFactory($controllerNamespaces, $container, $controllerDependencies), $dispatcher);
     }
 
     public function __construct(ControllerFactoryInterface $controllerFactory, EventDispatcherInterface $dispatcher)

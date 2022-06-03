@@ -30,7 +30,7 @@ Basics
 Your index.php should look something like this:
 
 ```php
-$router = Router::create($eventDispatcher, ['Your\\Controller\\Namespace'], [$dependency1, $dependency2]);
+$router = Router::create($eventDispatcher, ['Your\\Controller\\Namespace'], $container, [$dependency1, $dependency2]);
 $router->route($request);
 ```
 

@@ -7,19 +7,19 @@ use Symfony\Component\HttpFoundation\Request;
 class ControllerFactory implements ControllerFactoryInterface
 {
     protected array $namespaces;
+    protected ContainerInterface $container;
     protected array $dependencies;
-    private ?ContainerInterface $container;
 
     /**
      * @param array $namespaces Array of namespaces containing to search for controllers
+     * @param ContainerInterface $container PSR-11 Container to use to instantiate controllers
      * @param array $dependencies Array of dependencies to pass as constructor arguments to controllers
-     * @param ContainerInterface|null $container PSR-11 Container to use to instantiate controllers
      */
-    public function __construct(array $namespaces, array $dependencies = [], ?ContainerInterface $container = null)
+    public function __construct(array $namespaces, ContainerInterface $container, array $dependencies = [])
     {
         $this->namespaces = $namespaces;
-        $this->dependencies = $dependencies;
         $this->container = $container;
+        $this->dependencies = $dependencies;
     }
 
     /**
@@ -77,7 +77,7 @@ class ControllerFactory implements ControllerFactoryInterface
     }
 
     /**
-     * @param string[] $namespaces
+     * @param string[] $namespaces Namespaces to search for controllers
      */
     public function setNamespaces(array $namespaces): void
     {
@@ -85,7 +85,7 @@ class ControllerFactory implements ControllerFactoryInterface
     }
 
     /**
-     * @param array $dependencies
+     * @param array $dependencies Default Dependencies for controllers when the DI container doesn't contain a definition
      */
     public function setDependencies(array $dependencies): void
     {
@@ -93,7 +93,7 @@ class ControllerFactory implements ControllerFactoryInterface
     }
 
     /**
-     * @return string[]
+     * @return string[] Namespaces to search for controllers
      */
     public function getNamespaces(): array
     {
@@ -101,7 +101,7 @@ class ControllerFactory implements ControllerFactoryInterface
     }
 
     /**
-     * @return array
+     * @return array Default Dependencies for controllers when the DI container doesn't contain a definition
      */
     public function getDependencies(): array
     {
@@ -109,12 +109,12 @@ class ControllerFactory implements ControllerFactoryInterface
     }
 
     /**
-     * @param string $controllerClass
+     * @param string $controllerClass Full class name of controller
      * @return ControllerInterface|null
      */
     protected function createController(string $controllerClass): ?ControllerInterface
     {
-        if ($this->container && $this->container->has($controllerClass)) {
+        if ($this->container->has($controllerClass)) {
             return $this->container->get($controllerClass);
         }
 

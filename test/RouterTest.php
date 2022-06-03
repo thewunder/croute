@@ -34,17 +34,11 @@ class RouterTest extends TestCase
         $this->router = new Router($this->factory, new EventDispatcher());
     }
 
-    public function testCreate()
-    {
-        $router = Router::create(new EventDispatcher(), ['Croute']);
-        $this->assertTrue($router->getControllerFactory() instanceof ControllerFactory);
-    }
-
     public function testCreateWithContainer()
     {
         /** @var ContainerInterface|MockObject $container */
         $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
-        $router = Router::create(new EventDispatcher(), ['Croute'], [], $container);
+        $router = Router::create(new EventDispatcher(), ['Croute'], $container, []);
         $this->assertTrue($router->getControllerFactory() instanceof ControllerFactory);
     }
 
@@ -194,53 +188,47 @@ class RouterTest extends TestCase
 
     public function testAddRoute()
     {
-        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
-        $router->addRoute('/custom/{input}/static', 'GET', 'RouterTest', 'echo');
-        $response = $router->route(Request::create('/custom/xyz/static'));
+        $this->router->addRoute('/custom/{input}/static', 'GET', 'RouterTest', 'echo');
+        $response = $this->router->route(Request::create('/custom/xyz/static'));
         $this->assertEquals('xyz', $response->getContent());
     }
 
     public function testAddRoutes()
     {
-        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
-        $router->addRoutes([['/custom/{input}/static', 'GET', 'RouterTest', 'echo'],
+        $this->router->addRoutes([['/custom/{input}/static', 'GET', 'RouterTest', 'echo'],
             ['/custom/{input}/asdf', 'GET', 'RouterTest', 'return']]);
-        $response = $router->route(Request::create('/custom/xyz/static'));
+        $response = $this->router->route(Request::create('/custom/xyz/static'));
         $this->assertEquals('xyz', $response->getContent());
-        $response = $router->route(Request::create('/custom/xyz/asdf'));
+        $response = $this->router->route(Request::create('/custom/xyz/asdf'));
         $this->assertEquals('Hello', $response->getContent());
     }
 
     public function testAddRouteNoAction()
     {
-        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
-        $router->addRoute('/custom/{input}/return', 'GET', 'RouterTest');
-        $response = $router->route(Request::create('/custom/xyz/return'));
+        $this->router->addRoute('/custom/{input}/return', 'GET', 'RouterTest');
+        $response = $this->router->route(Request::create('/custom/xyz/return'));
         $this->assertEquals('Hello', $response->getContent());
     }
 
     public function testAddRouteInvalidMethod()
     {
-        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
-        $router->addRoute('/custom/{input}', 'POST', 'RouterTest', 'echo');
-        $response = $router->route(Request::create('/custom/xyz'));
+        $this->router->addRoute('/custom/{input}', 'POST', 'RouterTest', 'echo');
+        $response = $this->router->route(Request::create('/custom/xyz'));
         $this->assertEquals(405, $response->getStatusCode());
     }
 
     public function testAddCustomRoute()
     {
-        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
-        $router->addCustomRoute('custom_route', new Route('/custom/{input}', ['_controller'=>'RouterTest::echo']));
-        $response = $router->route(Request::create('/custom/xyz'));
+        $this->router->addCustomRoute('custom_route', new Route('/custom/{input}', ['_controller'=>'RouterTest::echo']));
+        $response = $this->router->route(Request::create('/custom/xyz'));
         $this->assertEquals('xyz', $response->getContent());
     }
 
     public function testAddCustomRouteMissingController()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $router = Router::create(new EventDispatcher(), ['Croute\\Test\\Fixtures\\Controller']);
-        $router->addCustomRoute('custom_route', new Route('/custom/{input}'));
-        $router->route(Request::create('/custom/xyz'));
+        $this->router->addCustomRoute('custom_route', new Route('/custom/{input}'));
+        $this->router->route(Request::create('/custom/xyz'));
     }
 
     public function testErrorHandlerExceptionInListener()
