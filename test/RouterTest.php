@@ -1,6 +1,7 @@
 <?php
 namespace Croute\Test;
 
+use Croute\Attributes\SecureHandler;
 use Croute\ControllerFactory;
 use Croute\ErrorHandlerInterface;
 use Croute\Event\BeforeActionEvent;
@@ -66,6 +67,7 @@ class RouterTest extends TestCase
     public function testActionAttribute()
     {
         $request = Request::create('/secure');
+        $this->router->addAttributeHandler(new SecureHandler());
         $response = $this->router->route($request);
         $this->assertEquals(Response::HTTP_MOVED_PERMANENTLY, $response->getStatusCode());
     }
@@ -81,6 +83,7 @@ class RouterTest extends TestCase
             ->willReturn(new AttributeTestController());
 
         $this->router = new Router($this->factory, new EventDispatcher());
+        $this->router->addAttributeHandler(new SecureHandler());
 
         $response = $this->router->route(Request::create('/attributeTest/insecure'));
 

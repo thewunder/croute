@@ -2,7 +2,7 @@
 namespace Croute;
 
 use Croute\Attributes\RoutingAttribute;
-use Croute\Attributes\RoutingAttributeInterface;
+use Croute\Attributes\AttributeHandlerInterface;
 use Croute\Event\AfterActionEvent;
 use Croute\Event\AfterSendEvent;
 use Croute\Event\BeforeActionEvent;
@@ -31,6 +31,9 @@ class Router
     protected EventDispatcherInterface $dispatcher;
     protected ?ErrorHandlerInterface $errorHandler = null;
     protected RouteCollection $routes;
+
+    /** @var AttributeHandlerInterface[] */
+    protected array $attributeHandlers = [];
 
     /**
      * Returns an instance using the default controller factory implementation
@@ -125,9 +128,6 @@ class Router
         return $this;
     }
 
-    /**
-     * @return ControllerFactoryInterface
-     */
     public function getControllerFactory(): ControllerFactoryInterface
     {
         return $this->controllerFactory;
@@ -173,7 +173,7 @@ class Router
             $response = $this->handleError('Unable to load '.$request->attributes->get('controller').'Controller.', 404);
         } else {
             $controller->setRequest($request);
-            $response = $this->runAttributes(new \ReflectionClass($controller), $request);
+            $response = $this->handleAttributes(new \ReflectionClass($controller), $request);
             if ($response) {
                 return $this->sendResponse($request, $response);
             }
@@ -198,6 +198,17 @@ class Router
         }
 
         return $this->sendResponse($request, $response);
+    }
+
+    /**
+     * Add an Attribute Handle. Attributes without a handler will be silently ignored.
+     *
+     * @param AttributeHandlerInterface $attributeHandler
+     * @return void
+     */
+    public function addAttributeHandler(AttributeHandlerInterface $attributeHandler): void
+    {
+        $this->attributeHandlers[$attributeHandler->getAttributeClass()] = $attributeHandler;
     }
 
     /**
@@ -246,7 +257,7 @@ class Router
             return $this->handleError("Method '{$actionMethod}' on {$controllerName}Controller is not public", 500);
         }
 
-        $response = $this->runAttributes($method, $request);
+        $response = $this->handleAttributes($method, $request);
         if ($response) {
             return $response;
         }
@@ -350,15 +361,24 @@ class Router
         return null;
     }
 
-    protected function runAttributes(\ReflectionClass|\ReflectionMethod $reflection, Request $request): ?Response
+    protected function handleAttributes(\ReflectionClass|\ReflectionMethod $reflection, Request $request): ?Response
     {
         $attributes = $reflection->getAttributes(RoutingAttribute::class, \ReflectionAttribute::IS_INSTANCEOF);
+
         foreach ($attributes as $attribute) {
             /** @var RoutingAttribute $routingAttribute */
             $routingAttribute = $attribute->newInstance();
-            $response = $routingAttribute->handleRequest($request);
-            if ($response) {
-                return $response;
+            $handler = $this->attributeHandlers[$attribute->getName()] ?? null;
+            if ($handler) {
+                if ($reflection instanceof \ReflectionMethod) {
+                    $response = $handler->handleAction($routingAttribute, $request, $reflection);
+                } else {
+                    $response = $handler->handleController($routingAttribute, $request, $reflection);
+                }
+
+                if ($response) {
+                    return $response;
+                }
             }
         }
         return null;

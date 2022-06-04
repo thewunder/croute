@@ -2,6 +2,7 @@
 
 namespace Croute\Test\Attributes;
 
+use Croute\Attributes\HttpMethodHandler;
 use Croute\Attributes\HttpMethod;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +14,7 @@ class HttpMethodTest extends TestCase
     {
         $attribute = new HttpMethod('post');
         $request = Request::create('/', 'POST');
-        $response = $attribute->handleRequest($request);
+        $response = (new HttpMethodHandler())->handleAction($attribute, $request, new \ReflectionMethod(__METHOD__));
         $this->assertNull($response);
     }
 
@@ -21,11 +22,11 @@ class HttpMethodTest extends TestCase
     {
         $attribute = new HttpMethod('post', 'put');
         $request = Request::create('/', 'POST');
-        $response = $attribute->handleRequest($request);
+        $response = (new HttpMethodHandler())->handleAction($attribute, $request, new \ReflectionMethod(__METHOD__));
         $this->assertNull($response);
 
         $request = Request::create('/', 'PUT');
-        $response = $attribute->handleRequest($request);
+        $response = (new HttpMethodHandler())->handleAction($attribute, $request, new \ReflectionMethod(__METHOD__));
         $this->assertNull($response);
     }
 
@@ -33,7 +34,7 @@ class HttpMethodTest extends TestCase
     {
         $attribute = new HttpMethod('post');
         $request = Request::create('/');
-        $response = $attribute->handleRequest($request);
+        $response = (new HttpMethodHandler())->handleAction($attribute, $request, new \ReflectionMethod(__METHOD__));
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(Response::HTTP_METHOD_NOT_ALLOWED, $response->getStatusCode());
     }

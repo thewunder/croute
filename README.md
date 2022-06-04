@@ -76,22 +76,7 @@ It supports nested namespaces so that:
 Attributes
 -----------
 
-Croute optionally supports controller and action attributes. To create a custom attribute, implement
-the RoutingAttribute interface.
-
-```php
-#[\Attribute(\Attribute::TARGET_CLASS|\Attribute::TARGET_METHOD)]
-class MyAttribute implements RoutingAttribute
-{
-    public function handleRequest(Request $request): ?Response
-    {
-        // return a response to bypass the normal action method
-    }
-}
-
-```
-
-Two attributes are included out of the box, HttpMethod and Secure.
+Croute optionally supports controller and action attributes. Two attributes are included out of the box, HttpMethod and Secure.
 
 ### HttpMethod
 
@@ -111,6 +96,50 @@ Requires a secure connection.  If the connection is not https send a 301 redirec
 class IndexController extends Controller
 {
 ```
+
+### Custom Attributes
+
+To create a custom attribute, implement
+the RoutingAttribute interface on your attribute, and an AttributeHandler.
+
+```php
+#[\Attribute(\Attribute::TARGET_CLASS|\Attribute::TARGET_METHOD)]
+class MyAttribute implements RoutingAttribute
+{
+    public function __construct(public string $option)
+    {}
+}
+
+```
+
+```php
+class MyAttributeHandler extends BasicAttributeHandler
+{
+    public function getAttributeClass(): string
+    {
+        return MyAttribute::class;
+    }
+
+    public function handleRequest(MyAttribute|RoutingAttribute $attribute, Request $request): ?Response 
+    {
+        // Return a response will immediately return that response, bypassing the normal controller action
+        if ($attribute->option == 'teapot') {
+            return new Response("I'm a teapot", Response::HTTP_I_AM_A_TEAPOT);
+        }
+        return null;
+    }
+}
+
+```
+
+Add the attribute handler to the router, and your custom attribute will be ready to use.
+
+```php
+
+$router->addAttributeHandler(new MyAttributeHandler());
+
+```
+
 
 Events
 ------
