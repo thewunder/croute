@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 abstract class Controller implements ControllerInterface
 {
-    protected Request $request;
+    protected ?Request $request = null;
 
     /**
      * @return Request
