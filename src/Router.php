@@ -370,14 +370,26 @@ class Router
             $routingAttribute = $attribute->newInstance();
             $handler = $this->attributeHandlers[$attribute->getName()] ?? null;
             if ($handler) {
-                if ($reflection instanceof \ReflectionMethod) {
-                    $response = $handler->handleAction($routingAttribute, $request, $reflection);
-                } else {
-                    $response = $handler->handleController($routingAttribute, $request, $reflection);
-                }
+                try {
+                    if ($reflection instanceof \ReflectionMethod) {
+                        $response = $handler->handleAction($routingAttribute, $request, $reflection);
+                    } else {
+                        $response = $handler->handleController($routingAttribute, $request, $reflection);
+                    }
 
-                if ($response) {
-                    return $response;
+                    if ($response) {
+                        return $response;
+                    }
+                } catch (\Throwable $e) {
+                    if ($this->errorHandler) {
+                        $response = $this->errorHandler->handleException($e);
+                    }
+
+                    if ($response) {
+                        return $response;
+                    } else {
+                        throw $e;
+                    }
                 }
             }
         }
