@@ -285,7 +285,7 @@ class Router
         $response = null;
         try {
             $response = $method->invokeArgs($controller, $params);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             if ($this->errorHandler) {
                 $response = $this->errorHandler->handleException($e);
             } else {
@@ -385,11 +385,11 @@ class Router
     }
 
     /**
-     * @param $message
+     * @param string $message
      * @param int $code
      * @return Response
      */
-    protected function handleError($message, int $code = 404): Response
+    protected function handleError(string $message, int $code = 404): Response
     {
         if (!$this->errorHandler) {
             $response = new Response(Response::$statusTexts[$code], $code);

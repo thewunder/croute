@@ -13,8 +13,10 @@ interface ErrorHandlerInterface
     public function displayErrorPage(int $code, string $message = null): Response;
 
     /**
-     * @param \Exception $e
-     * @return Response
+     * Convert exceptions into a http response
+     *
+     * @param \Throwable $e
+     * @return Response|null
      */
-    public function handleException(\Exception $e): ?Response;
+    public function handleException(\Throwable $e): ?Response;
 }
