@@ -1,3 +1,12 @@
+Version 2.0.1
+===========
+
+Fixes
+-----------
+* Fix type error when handling an exception
+* Handle Throwables rather than just Exceptions
+* Handle exceptions thrown in attribute handlers
+
 Version 2.0
 ===========
 
@@ -12,7 +21,6 @@ New Features
 * Allow Symfony 6 components
 * Upgrade to PhpUnit 9.x
 
-Other
 
 Version 1.5.1
 ===========
