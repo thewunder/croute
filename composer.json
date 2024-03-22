@@ -25,10 +25,9 @@
         "psr/container": "^2.0"
     },
     "require-dev": {
-        "mikey179/vfsstream": "~1.0",
-        "php-coveralls/php-coveralls": "^2.2",
         "phpunit/phpunit": "^9.0",
         "symfony/event-dispatcher": "^6.0 || ^7.0",
+        "rector/rector": "^1.0"
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
