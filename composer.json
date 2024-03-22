@@ -19,15 +19,16 @@
     },
     "require": {
         "php": ">=8.0",
-        "symfony/http-foundation": "^5.0||^6.0",
-        "symfony/routing": "^5.0||^6.0",
-        "psr/event-dispatcher": "^1.0"
+        "symfony/http-foundation": "^6.0 || ^7.0",
+        "symfony/routing": "^6.0 || ^7.0",
+        "psr/event-dispatcher": "^1.0",
+        "psr/container": "^2.0"
     },
     "require-dev": {
         "mikey179/vfsstream": "~1.0",
         "php-coveralls/php-coveralls": "^2.2",
         "phpunit/phpunit": "^9.0",
-        "symfony/event-dispatcher": "^6.0"
+        "symfony/event-dispatcher": "^6.0 || ^7.0",
     },
     "scripts": {
         "test": "vendor/bin/phpunit"
