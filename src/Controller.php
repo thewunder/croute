@@ -35,8 +35,6 @@ abstract class Controller implements ControllerInterface
     }
 
     /**
-     * @param string $url
-     * @param int $status
      * @return RedirectResponse
      */
     protected function redirect(string $url, int $status = 302): RedirectResponse
@@ -57,8 +55,6 @@ abstract class Controller implements ControllerInterface
     }
 
     /**
-     * @param mixed $data
-     * @param int $status
      * @return JsonResponse
      */
     protected function json(mixed $data, int $status = 200): JsonResponse
@@ -67,7 +63,6 @@ abstract class Controller implements ControllerInterface
     }
 
     /**
-     * @param string $text
      * @return Response
      */
     protected function notFound(string $text = 'Not Found'): Response

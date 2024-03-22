@@ -11,7 +11,6 @@ interface ControllerInterface
     public function getRequest(): Request;
 
     /**
-     * @param Request $request
      * @return void
      */
     public function setRequest(Request $request): void;

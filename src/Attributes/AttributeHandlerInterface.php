@@ -24,9 +24,6 @@ interface AttributeHandlerInterface
     public function handleController(RoutingAttribute $attribute, Request $request, \ReflectionClass $controllerClass): ?Response;
 
     /**
-     * @param RoutingAttribute $attribute
-     * @param Request $request
-     * @param \ReflectionMethod $actionMethod
      * @return Response|null
      */
     public function handleAction(RoutingAttribute $attribute, Request $request, \ReflectionMethod $actionMethod): ?Response;

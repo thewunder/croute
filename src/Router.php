@@ -27,8 +27,6 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class Router
 {
-    protected ControllerFactoryInterface $controllerFactory;
-    protected EventDispatcherInterface $dispatcher;
     protected ?ErrorHandlerInterface $errorHandler = null;
     protected RouteCollection $routes;
 
@@ -38,7 +36,6 @@ class Router
     /**
      * Returns an instance using the default controller factory implementation
      *
-     * @param EventDispatcherInterface $dispatcher
      * @param string[] $controllerNamespaces Namespaces to search for controller classes
      * @param ContainerInterface $container PSR-11 Container to use to instantiate controllers, the full class name must resolve to an instance of the controller class
      * @param array $controllerDependencies If the container does not have the class these will be passed to controller class constructors
@@ -49,10 +46,8 @@ class Router
         return new static(new ControllerFactory($controllerNamespaces, $container, $controllerDependencies), $dispatcher);
     }
 
-    public function __construct(ControllerFactoryInterface $controllerFactory, EventDispatcherInterface $dispatcher)
+    public function __construct(protected ControllerFactoryInterface $controllerFactory, protected EventDispatcherInterface $dispatcher)
     {
-        $this->controllerFactory = $controllerFactory;
-        $this->dispatcher = $dispatcher;
         $this->routes = new RouteCollection();
     }
 
@@ -65,11 +60,9 @@ class Router
      * Will call \\ControllerNamespace\\Namespace\\CustomController::specialAction($param1) for GET requests
      *
      *
-     * @param string $path
      * @param array|string $methods A required HTTP method or an array of methods
      * @param string $controller Controller class minus the controller namespace and 'Controller'
      * @param string|null $action Action name if omitted last part of path will be used to determine the action
-     *
      * @return $this
      */
     public function addRoute(string $path, array|string $methods, string $controller, string $action = null): self
@@ -90,8 +83,6 @@ class Router
      * Add multiple routes at once
      *
      * @see addRoute for format and example
-     *
-     * @param array $routes
      */
     public function addRoutes(array $routes): void
     {
@@ -114,8 +105,6 @@ class Router
      * Will call \\ControllerNamespace\\Namespace\\CustomController::specialAction($param1) for all HTTP request methods
      *
      *
-     * @param string $name
-     * @param Route $route
      * @return $this
      */
     public function addCustomRoute(string $name, Route $route): self
@@ -134,7 +123,6 @@ class Router
     }
 
     /**
-     * @param Request $request
      * @return Response
      */
     public function route(Request $request): Response
@@ -203,7 +191,6 @@ class Router
     /**
      * Add an Attribute Handle. Attributes without a handler will be silently ignored.
      *
-     * @param AttributeHandlerInterface $attributeHandler
      * @return void
      */
     public function addAttributeHandler(AttributeHandlerInterface $attributeHandler): void
@@ -212,7 +199,6 @@ class Router
     }
 
     /**
-     * @param Request $request
      * @return UrlMatcherInterface
      */
     protected function getUrlMatcher(Request $request): UrlMatcherInterface
@@ -222,8 +208,6 @@ class Router
     }
 
     /**
-     * @param ControllerInterface $controller
-     * @param Request $request
      * @return null|string
      */
     protected function matchAction(ControllerInterface $controller, Request $request): ?string
@@ -243,9 +227,6 @@ class Router
     }
 
     /**
-     * @param ControllerInterface $controller
-     * @param string $actionMethod
-     * @param Request $request
      * @return Response
      */
     protected function invokeAction(ControllerInterface $controller, string $actionMethod, Request $request): Response
@@ -307,7 +288,6 @@ class Router
     }
 
     /**
-     * @param ErrorHandlerInterface $errorController
      * @return $this
      */
     public function setErrorHandler(ErrorHandlerInterface $errorController): self
@@ -325,9 +305,7 @@ class Router
      * Then handles returning a response immediately if the listener sets the response.
      *
      * @param $eventName
-     * @param RouterEvent $event
      * @return Response|null
-     *
      * @throws \Throwable
      */
     private function dispatchEvent($eventName, RouterEvent $event): ?Response
@@ -397,8 +375,6 @@ class Router
     }
 
     /**
-     * @param string $message
-     * @param int $code
      * @return Response
      */
     protected function handleError(string $message, int $code = 404): Response
@@ -413,8 +389,6 @@ class Router
     }
 
     /**
-     * @param Request $request
-     * @param Response $response
      * @return Response
      */
     protected function sendResponse(Request $request, Response $response): Response

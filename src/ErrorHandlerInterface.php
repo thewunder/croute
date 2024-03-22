@@ -6,7 +6,6 @@ use Symfony\Component\HttpFoundation\Response;
 interface ErrorHandlerInterface
 {
     /**
-     * @param int $code
      * @param string|null $message
      * @return Response
      */
@@ -15,7 +14,6 @@ interface ErrorHandlerInterface
     /**
      * Convert exceptions into a http response
      *
-     * @param \Throwable $e
      * @return Response|null
      */
     public function handleException(\Throwable $e): ?Response;

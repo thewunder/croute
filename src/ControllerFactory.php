@@ -6,20 +6,16 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ControllerFactory implements ControllerFactoryInterface
 {
-    protected array $namespaces;
     protected ContainerInterface $container;
-    protected array $dependencies;
 
     /**
      * @param array $namespaces Array of namespaces containing to search for controllers
      * @param ContainerInterface $container PSR-11 Container to use to instantiate controllers
      * @param array $dependencies Array of dependencies to pass as constructor arguments to controllers
      */
-    public function __construct(array $namespaces, ContainerInterface $container, array $dependencies = [])
+    public function __construct(protected array $namespaces, ContainerInterface $container, protected array $dependencies = [])
     {
-        $this->namespaces = $namespaces;
         $this->container = $container;
-        $this->dependencies = $dependencies;
     }
 
     /**
@@ -36,9 +32,7 @@ class ControllerFactory implements ControllerFactoryInterface
             return preg_replace_callback(
                 ['#^[a-z]#',
                 '#\\\\[a-z]#'], //normalize capitalization
-                function ($matches) {
-                    return strtoupper($matches[0]);
-                },
+                fn($matches) => strtoupper($matches[0]),
                 $controllerName
             );
         } else {

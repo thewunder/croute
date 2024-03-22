@@ -19,7 +19,7 @@ class ControllerFactoryTest extends TestCase
         $this->factory = new ControllerFactory(['Croute\\Test\\Fixtures\\Controller'], $this->container, []);
     }
 
-    public function testIndexController()
+    public function testIndexController(): void
     {
         $request = Request::create('/');
         $controllerName = $this->factory->getControllerName($request);
@@ -27,7 +27,7 @@ class ControllerFactoryTest extends TestCase
         $this->assertInstanceOf(Controller\IndexController::class, $controller);
     }
 
-    public function testNamedController()
+    public function testNamedController(): void
     {
         $request = Request::create('/named/');
         $controllerName = $this->factory->getControllerName($request);
@@ -35,7 +35,7 @@ class ControllerFactoryTest extends TestCase
         $this->assertInstanceOf(Controller\NamedController::class, $controller);
     }
 
-    public function testControllerWithContainer()
+    public function testControllerWithContainer(): void
     {
         $this->container->expects($this->once())->method('has')->with(Controller\NamedController::class)->willReturn(true);
         $controller = new Controller\NamedController();
@@ -46,14 +46,14 @@ class ControllerFactoryTest extends TestCase
         $this->assertEquals($controller, $fromFactory);
     }
 
-    public function testSanitization()
+    public function testSanitization(): void
     {
         $request = Request::create('/nam..\..ed/');
         $controllerName = $this->factory->getControllerName($request);
         $this->assertEquals('Named', $controllerName);
     }
 
-    public function testNamespacedControllers()
+    public function testNamespacedControllers(): void
     {
         $request = Request::create('/myNamespace/');
         $controllerName = $this->factory->getControllerName($request);
@@ -66,7 +66,7 @@ class ControllerFactoryTest extends TestCase
         $this->assertInstanceOf(Controller\MyNamespace\NamedController::class, $controller);
     }
 
-    public function testControllerNotFound()
+    public function testControllerNotFound(): void
     {
         $request = Request::create('/asdf/');
         $controllerName = $this->factory->getControllerName($request);
@@ -74,7 +74,7 @@ class ControllerFactoryTest extends TestCase
         $this->assertNull($controller);
     }
 
-    public function testGettersAndSetters()
+    public function testGettersAndSetters(): void
     {
         $dependencies = ['asdf'];
         $this->factory->setDependencies($dependencies);

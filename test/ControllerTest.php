@@ -16,20 +16,20 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ControllerTest extends TestCase
 {
-    public function testGetResponse()
+    public function testGetResponse(): void
     {
         $controller = $this->getController();
         $this->assertTrue($controller->getRequest() instanceof Request);
     }
 
-    public function testJson()
+    public function testJson(): void
     {
         $controller = $this->getController();
         $json = $this->getControllerMethod($controller, 'json');
         $this->assertTrue($json->invoke($controller, []) instanceof JsonResponse);
     }
 
-    public function testRedirect()
+    public function testRedirect(): void
     {
         $controller = $this->getController();
         $redirect = $this->getControllerMethod($controller, 'redirect');
@@ -39,7 +39,7 @@ class ControllerTest extends TestCase
         $this->assertEquals('http://localhost/test', $response->headers->get('Location'));
     }
 
-    public function testNotFound()
+    public function testNotFound(): void
     {
         $controller = $this->getController();
         $notFound = $this->getControllerMethod($controller, 'notFound');
@@ -50,7 +50,7 @@ class ControllerTest extends TestCase
         $this->assertEquals('Testing', $response->getContent());
     }
 
-    public function testFileDownload()
+    public function testFileDownload(): void
     {
         $controller = $this->getController();
         $download = $this->getControllerMethod($controller, 'fileDownload');
@@ -72,10 +72,6 @@ class ControllerTest extends TestCase
         return $controller;
     }
 
-    /**
-     * @param Controller $controller
-     * @param string $method
-     */
     protected function getControllerMethod(Controller $controller, string $method): \ReflectionMethod
     {
         $method = new \ReflectionMethod($controller, $method);

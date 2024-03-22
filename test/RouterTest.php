@@ -24,7 +24,7 @@ class RouterTest extends TestCase
 
     public function setUp(): void
     {
-        $this->factory = $this->getMockBuilder('Croute\\ControllerFactory')
+        $this->factory = $this->getMockBuilder(\Croute\ControllerFactory::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getController'])
             ->getMock();
@@ -35,7 +35,7 @@ class RouterTest extends TestCase
         $this->router = new Router($this->factory, new EventDispatcher());
     }
 
-    public function testCreateWithContainer()
+    public function testCreateWithContainer(): void
     {
         /** @var ContainerInterface|MockObject $container */
         $container = $this->getMockBuilder(ContainerInterface::class)->getMock();
@@ -43,13 +43,13 @@ class RouterTest extends TestCase
         $this->assertTrue($router->getControllerFactory() instanceof ControllerFactory);
     }
 
-    public function testRoute()
+    public function testRoute(): void
     {
         $response = $this->router->route(Request::create('/'));
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testControllerNotFound()
+    public function testControllerNotFound(): void
     {
         $this->factory->method('getController')
             ->willReturn(null);
@@ -58,13 +58,13 @@ class RouterTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testActionNotFound()
+    public function testActionNotFound(): void
     {
         $response = $this->router->route(Request::create('/asdf'));
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testActionAttribute()
+    public function testActionAttribute(): void
     {
         $request = Request::create('/secure');
         $this->router->addAttributeHandler(new SecureHandler());
@@ -72,9 +72,9 @@ class RouterTest extends TestCase
         $this->assertEquals(Response::HTTP_MOVED_PERMANENTLY, $response->getStatusCode());
     }
 
-    public function testControllerAttribute()
+    public function testControllerAttribute(): void
     {
-        $this->factory = $this->getMockBuilder('Croute\\ControllerFactory')
+        $this->factory = $this->getMockBuilder(\Croute\ControllerFactory::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getController'])
             ->getMock();
@@ -90,14 +90,14 @@ class RouterTest extends TestCase
         $this->assertEquals(Response::HTTP_MOVED_PERMANENTLY, $response->getStatusCode());
     }
 
-    public function testReturn()
+    public function testReturn(): void
     {
         $response = $this->router->route(Request::create('/return'));
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Hello', $response->getContent());
     }
 
-    public function testParams()
+    public function testParams(): void
     {
         $response = $this->router->route(Request::create('/params?required=Hello'));
         $this->assertEquals(200, $response->getStatusCode());
@@ -106,11 +106,11 @@ class RouterTest extends TestCase
         $this->assertEquals('defaultValue', $data->optional);
     }
 
-    public function testEvents()
+    public function testEvents(): void
     {
         /** @var EventDispatcher|MockObject $mockDispatcher */
-        $mockDispatcher = $this->getMockBuilder('Symfony\\Component\\EventDispatcher\\EventDispatcher')
-            ->onlyMethods(array('dispatch'))
+        $mockDispatcher = $this->getMockBuilder(\Symfony\Component\EventDispatcher\EventDispatcher::class)
+            ->onlyMethods(['dispatch'])
             ->getMock();
 
         $request = Request::create('/');
@@ -122,7 +122,7 @@ class RouterTest extends TestCase
         $router->route($request);
     }
 
-    public function testResponseFromRequestListener()
+    public function testResponseFromRequestListener(): void
     {
         $this->factory->expects($this->never())
             ->method('getController');
@@ -139,7 +139,7 @@ class RouterTest extends TestCase
         $this->assertEquals('I\'m a teapot', $response->getContent());
     }
 
-    public function testResponseFromBeforeActionListener()
+    public function testResponseFromBeforeActionListener(): void
     {
         $dispatcher = new EventDispatcher();
         $router = new Router($this->factory, $dispatcher);
@@ -153,13 +153,13 @@ class RouterTest extends TestCase
         $this->assertEquals('I\'m a teapot', $response->getContent());
     }
 
-    public function testException()
+    public function testException(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->router->route(Request::create('/exception'));
     }
 
-    public function testExceptionInListener()
+    public function testExceptionInListener(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->factory->method('getController')
@@ -173,11 +173,11 @@ class RouterTest extends TestCase
         $router->route(Request::create('/'));
     }
 
-    public function testErrorHandlerException()
+    public function testErrorHandlerException(): void
     {
         /** @var ErrorHandlerInterface|MockObject $mockErrorHandler */
-        $mockErrorHandler = $this->getMockBuilder('Croute\\ErrorHandlerInterface')
-            ->onlyMethods(array('displayErrorPage', 'handleException'))
+        $mockErrorHandler = $this->getMockBuilder(\Croute\ErrorHandlerInterface::class)
+            ->onlyMethods(['displayErrorPage', 'handleException'])
             ->getMock();
 
         $mockErrorHandler->expects($this->once())->method('handleException')
@@ -189,14 +189,14 @@ class RouterTest extends TestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
-    public function testAddRoute()
+    public function testAddRoute(): void
     {
         $this->router->addRoute('/custom/{input}/static', 'GET', 'RouterTest', 'echo');
         $response = $this->router->route(Request::create('/custom/xyz/static'));
         $this->assertEquals('xyz', $response->getContent());
     }
 
-    public function testAddRoutes()
+    public function testAddRoutes(): void
     {
         $this->router->addRoutes([['/custom/{input}/static', 'GET', 'RouterTest', 'echo'],
             ['/custom/{input}/asdf', 'GET', 'RouterTest', 'return']]);
@@ -206,39 +206,39 @@ class RouterTest extends TestCase
         $this->assertEquals('Hello', $response->getContent());
     }
 
-    public function testAddRouteNoAction()
+    public function testAddRouteNoAction(): void
     {
         $this->router->addRoute('/custom/{input}/return', 'GET', 'RouterTest');
         $response = $this->router->route(Request::create('/custom/xyz/return'));
         $this->assertEquals('Hello', $response->getContent());
     }
 
-    public function testAddRouteInvalidMethod()
+    public function testAddRouteInvalidMethod(): void
     {
         $this->router->addRoute('/custom/{input}', 'POST', 'RouterTest', 'echo');
         $response = $this->router->route(Request::create('/custom/xyz'));
         $this->assertEquals(405, $response->getStatusCode());
     }
 
-    public function testAddCustomRoute()
+    public function testAddCustomRoute(): void
     {
         $this->router->addCustomRoute('custom_route', new Route('/custom/{input}', ['_controller'=>'RouterTest::echo']));
         $response = $this->router->route(Request::create('/custom/xyz'));
         $this->assertEquals('xyz', $response->getContent());
     }
 
-    public function testAddCustomRouteMissingController()
+    public function testAddCustomRouteMissingController(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->router->addCustomRoute('custom_route', new Route('/custom/{input}'));
         $this->router->route(Request::create('/custom/xyz'));
     }
 
-    public function testErrorHandlerExceptionInListener()
+    public function testErrorHandlerExceptionInListener(): void
     {
         /** @var ErrorHandlerInterface|MockObject $mockErrorHandler */
-        $mockErrorHandler = $this->getMockBuilder('Croute\\ErrorHandlerInterface')
-            ->onlyMethods(array('displayErrorPage', 'handleException'))
+        $mockErrorHandler = $this->getMockBuilder(\Croute\ErrorHandlerInterface::class)
+            ->onlyMethods(['displayErrorPage', 'handleException'])
             ->getMock();
 
         $mockErrorHandler->expects($this->once())->method('handleException')
@@ -257,11 +257,11 @@ class RouterTest extends TestCase
         $this->assertEquals(500, $response->getStatusCode());
     }
 
-    public function testErrorHandlerErrorPage()
+    public function testErrorHandlerErrorPage(): void
     {
         /** @var ErrorHandlerInterface|MockObject $mockErrorHandler */
-        $mockErrorHandler = $this->getMockBuilder('Croute\\ErrorHandlerInterface')
-            ->onlyMethods(array('displayErrorPage', 'handleException'))
+        $mockErrorHandler = $this->getMockBuilder(\Croute\ErrorHandlerInterface::class)
+            ->onlyMethods(['displayErrorPage', 'handleException'])
             ->getMock();
 
         $mockErrorHandler->expects($this->once())->method('displayErrorPage')
@@ -272,13 +272,13 @@ class RouterTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testMissingParams()
+    public function testMissingParams(): void
     {
         $response = $this->router->route(Request::create('/params'));
         $this->assertEquals(400, $response->getStatusCode());
     }
 
-    public function testInaccessibleAction()
+    public function testInaccessibleAction(): void
     {
         $response = $this->router->route(Request::create('/protected'));
         $this->assertEquals(500, $response->getStatusCode());

@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class HttpMethodTest extends TestCase
 {
-    public function testMethodMatch()
+    public function testMethodMatch(): void
     {
         $attribute = new HttpMethod('post');
         $request = Request::create('/', 'POST');
@@ -18,7 +18,7 @@ class HttpMethodTest extends TestCase
         $this->assertNull($response);
     }
 
-    public function testMultiMatch()
+    public function testMultiMatch(): void
     {
         $attribute = new HttpMethod('post', 'put');
         $request = Request::create('/', 'POST');
@@ -30,7 +30,7 @@ class HttpMethodTest extends TestCase
         $this->assertNull($response);
     }
 
-    public function testNoMatch()
+    public function testNoMatch(): void
     {
         $attribute = new HttpMethod('post');
         $request = Request::create('/');

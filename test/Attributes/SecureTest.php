@@ -11,14 +11,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SecureTest extends TestCase
 {
-    public function testInSecureController()
+    public function testInSecureController(): void
     {
         $response = (new SecureHandler())->handleController(new Secure(), Request::create('http://localhost/'), new \ReflectionClass(IndexController::class));
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(Response::HTTP_MOVED_PERMANENTLY, $response->getStatusCode());
     }
 
-    public function testSecureController()
+    public function testSecureController(): void
     {
         $response = (new SecureHandler())->handleController(new Secure(), Request::create('https://localhost/'), new \ReflectionClass(IndexController::class));
         $this->assertNull($response);
