@@ -1,3 +1,12 @@
+Version 3.0.0
+===========
+
+Updates
+-----------
+* Require PHP 8.1
+* Require Symfony 6.x | 7.x
+* Upgrade to PHP Unit 10.x
+
 Version 2.0.1
 ===========
 
