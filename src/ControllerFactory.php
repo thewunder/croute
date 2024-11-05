@@ -6,16 +6,16 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ControllerFactory implements ControllerFactoryInterface
 {
-    protected ContainerInterface $container;
-
     /**
      * @param array $namespaces Array of namespaces containing to search for controllers
      * @param ContainerInterface $container PSR-11 Container to use to instantiate controllers
      * @param array $dependencies Array of dependencies to pass as constructor arguments to controllers
      */
-    public function __construct(protected array $namespaces, ContainerInterface $container, protected array $dependencies = [])
+    public function __construct(
+        protected readonly array $namespaces,
+        protected readonly ContainerInterface $container,
+        protected readonly array $dependencies = [])
     {
-        $this->container = $container;
     }
 
     /**
@@ -68,22 +68,6 @@ class ControllerFactory implements ControllerFactoryInterface
         }
 
         return null;
-    }
-
-    /**
-     * @param string[] $namespaces Namespaces to search for controllers
-     */
-    public function setNamespaces(array $namespaces): void
-    {
-        $this->namespaces = $namespaces;
-    }
-
-    /**
-     * @param array $dependencies Default Dependencies for controllers when the DI container doesn't contain a definition
-     */
-    public function setDependencies(array $dependencies): void
-    {
-        $this->dependencies = $dependencies;
     }
 
     /**

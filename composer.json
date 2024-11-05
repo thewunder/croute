@@ -18,7 +18,7 @@
         "psr-4": { "Croute\\Test\\": "test/"}
     },
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "symfony/http-foundation": "^6.0 || ^7.0",
         "symfony/routing": "^6.0 || ^7.0",
         "psr/event-dispatcher": "^1.0",

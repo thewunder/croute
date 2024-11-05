@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 final class BeforeActionEvent extends RouterEvent
 {
-    public function __construct(Request $request, private ControllerInterface $controller, private ReflectionMethod $method)
+    public function __construct(Request $request, private readonly ControllerInterface $controller, private readonly ReflectionMethod $method)
     {
         parent::__construct($request);
     }

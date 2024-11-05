@@ -28,7 +28,7 @@ use Symfony\Component\Routing\RouteCollection;
 class Router
 {
     protected ?ErrorHandlerInterface $errorHandler = null;
-    protected RouteCollection $routes;
+    protected readonly RouteCollection $routes;
 
     /** @var AttributeHandlerInterface[] */
     protected array $attributeHandlers = [];
@@ -46,7 +46,9 @@ class Router
         return new static(new ControllerFactory($controllerNamespaces, $container, $controllerDependencies), $dispatcher);
     }
 
-    public function __construct(protected ControllerFactoryInterface $controllerFactory, protected EventDispatcherInterface $dispatcher)
+    public function __construct(
+        protected readonly ControllerFactoryInterface $controllerFactory,
+        protected readonly EventDispatcherInterface $dispatcher)
     {
         $this->routes = new RouteCollection();
     }
@@ -91,7 +93,7 @@ class Router
             if($count < 3 || $count > 4) {
                 throw new \InvalidArgumentException('Each route must be: path, method(s), controller, [action]');
             }
-            call_user_func_array([$this, 'addRoute'], $route);
+            call_user_func_array($this->addRoute(...), $route);
         }
     }
 
@@ -138,7 +140,7 @@ class Router
         $matcher = $this->getUrlMatcher($request);
         try {
             $match = $matcher->match($request->getPathInfo());
-            $controllerName = $match['_controller'];
+            $controllerName = (string) $match['_controller'];
             if(str_contains($controllerName, '::')) {
                 [$controllerName, $actionMethod] = explode('::', $controllerName);
                 if(strrpos($actionMethod, 'Action') === false) {

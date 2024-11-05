@@ -73,15 +73,4 @@ class ControllerFactoryTest extends TestCase
         $controller = $this->factory->getController($request, $controllerName);
         $this->assertNull($controller);
     }
-
-    public function testGettersAndSetters(): void
-    {
-        $dependencies = ['asdf'];
-        $this->factory->setDependencies($dependencies);
-        $this->assertEquals($dependencies, $this->factory->getDependencies());
-
-        $namespaces = ['namespace1', 'namespace2'];
-        $this->factory->setNamespaces($namespaces);
-        $this->assertEquals($namespaces, $this->factory->getNamespaces());
-    }
 }

@@ -32,7 +32,7 @@ class RouterTestController extends Controller
         return new Response('Secure stuff');
     }
 
-    public function exceptionAction()
+    public function exceptionAction(): never
     {
         throw new \RuntimeException('Explode');
     }

@@ -11,7 +11,7 @@ final class HttpMethod implements RoutingAttribute
     /**
      * @var string[]
      */
-    public array $methods;
+    public readonly array $methods;
 
     public function __construct(string $method, string ...$moreMethods)
     {
