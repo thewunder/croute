@@ -74,8 +74,6 @@ class ControllerTest extends TestCase
 
     protected function getControllerMethod(Controller $controller, string $method): \ReflectionMethod
     {
-        $method = new \ReflectionMethod($controller, $method);
-        $method->setAccessible(true);
-        return $method;
+        return new \ReflectionMethod($controller, $method);
     }
 }
