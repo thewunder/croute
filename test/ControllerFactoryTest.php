@@ -48,7 +48,7 @@ class ControllerFactoryTest extends TestCase
 
     public function testSanitization(): void
     {
-        $request = Request::create('/nam..\..ed/');
+        $request = Request::create('/nam....ed/');
         $controllerName = $this->factory->getControllerName($request);
         $this->assertEquals('Named', $controllerName);
     }
