@@ -253,7 +253,7 @@ class Router
 
         $params = [];
         foreach ($method->getParameters() as $parameter) {
-            $value = $request->get($parameter->getName());
+            $value = $request->query->get($parameter->getName());
             if ($value === null) {
                 if ($parameter->isOptional()) {
                     $value = $parameter->getDefaultValue();
