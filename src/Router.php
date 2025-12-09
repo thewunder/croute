@@ -237,7 +237,7 @@ class Router
 
         if (!$method->isPublic()) {
             $controllerName = $request->attributes->get('controller');
-            return $this->handleError("Method '{$actionMethod}' on {$controllerName}Controller is not public", 500);
+            return $this->handleError("Method '$actionMethod' on {$controllerName}Controller is not public", 500);
         }
 
         $response = $this->handleAttributes($method, $request);
@@ -253,12 +253,15 @@ class Router
 
         $params = [];
         foreach ($method->getParameters() as $parameter) {
-            $value = $request->query->get($parameter->getName());
+            $paramName = $parameter->getName();
+            $value = $request->attributes->get($paramName)
+                ?? $request->query->get($paramName)
+                ?? $request->request->get($paramName);
             if ($value === null) {
                 if ($parameter->isOptional()) {
                     $value = $parameter->getDefaultValue();
                 } else {
-                    return $this->handleError("Missing required parameter '{$parameter->getName()}'", 400);
+                    return $this->handleError("Missing required parameter '$paramName'", 400);
                 }
             }
             $params[] = $value;
