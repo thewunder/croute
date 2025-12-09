@@ -1,3 +1,11 @@
+Version 3.1.0
+===========
+
+Updates
+-----------
+* Support Symfony 8.x
+* Run tests on PHP 8.5
+
 Version 3.0.0
 ===========
 
